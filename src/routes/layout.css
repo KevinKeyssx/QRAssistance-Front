@@ -1,0 +1,16 @@
+@import 'tailwindcss';
+
+@variant dark (&:where(.dark, .dark *));
+
+@theme {
+    --color-lds-navy : #1a3a5c;
+    --color-lds-gold : #c9a227;
+}
+
+html,
+body {
+    margin     : 0;
+    padding    : 0;
+    min-height : 100dvh;
+    background : transparent;
+}
