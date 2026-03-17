@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { searchUsersByName } from '$lib/utils/api';
-	import type { ApiUser } from '$lib/types';
-	import Input from '../shared/Input.svelte';
+	import { searchUsersByName }    from '$lib/utils/api';
+	import type { ApiUser }         from '$lib/types';
+	import Input                    from '$lib/components/shared/Input.svelte';
 
-	interface Props {
+
+    interface Props {
 		onSuccess : ( user: ApiUser ) => void;
 	}
-	let { onSuccess }: Props = $props();
+
+    let { onSuccess }: Props = $props();
 
 	let query      = $state( '' );
 	let results    = $state<ApiUser[]>( [] );
@@ -14,14 +16,17 @@
 	let searched   = $state( false );
 	let debounceId = $state<ReturnType<typeof setTimeout> | null>( null );
 
-	function handleInput() {
+
+    function handleInput() {
 		if ( debounceId ) clearTimeout( debounceId );
-		if ( query.trim().length < 2 ) {
+
+        if ( query.trim().length < 2 ) {
 			results = [];
 			searched = false;
 			return;
 		}
-		debounceId = setTimeout( async () => {
+
+        debounceId = setTimeout( async () => {
 			searching = true;
 			searched  = false;
 			try {
@@ -38,7 +43,7 @@
 	}
 </script>
 
-<div class="animate-slide-up w-full">
+<section class="animate-slide-up w-full">
 	<!-- ═══ Header ════════════════════════════════ -->
 	<div class="text-center mb-8">
 		<div class="relative inline-flex mb-4">
@@ -75,7 +80,8 @@
 				<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
 			</svg>
 		{/snippet}
-		{#snippet rightIcon()}
+
+        {#snippet rightIcon()}
 			{#if searching}
 				<svg class="w-5 h-5 text-lds-navy dark:text-lds-gold animate-spin" fill="none" viewBox="0 0 24 24">
 					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
@@ -100,27 +106,27 @@
 						type="button"
 						onclick={() => selectUser( user )}
 						class="group relative w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-left overflow-hidden border-2 transition-all duration-200
-							   bg-white dark:bg-gray-800 
-							   border-gray-100 dark:border-gray-700
-							   hover:border-lds-navy dark:hover:border-lds-gold hover:shadow-md
-							   active:scale-[0.98]"
+                            bg-white dark:bg-gray-800 
+                            border-gray-100 dark:border-gray-700
+                            hover:border-lds-navy dark:hover:border-lds-gold hover:shadow-md active:scale-[0.98]"
 					>
 						<!-- Avatar -->
-						<div class="shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm shadow transition-colors duration-200
-									bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200
-									group-hover:bg-lds-navy dark:group-hover:bg-lds-gold group-hover:text-white dark:group-hover:text-gray-900"
+                        <div class="shrink-0 w-11 h-11 rounded-full flex items-center justify-center font-bold text-sm shadow transition-colors duration-200
+                            bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-200
+                            group-hover:bg-lds-navy dark:group-hover:bg-lds-gold group-hover:text-white dark:group-hover:text-gray-900"
 						>
-							{user.firstName[0]}{user.lastName[0]}
+							{ user.firstName[0]}{user.lastName[0] }
 						</div>
-						
+
 						<!-- Datos -->
 						<div class="flex-1 min-w-0">
 							<p class="text-sm font-bold text-gray-900 dark:text-gray-100 truncate transition-colors duration-200 group-hover:text-lds-navy dark:group-hover:text-lds-gold">
-								{user.firstName} {user.lastName}
+								{ user.firstName} {user.lastName }
 							</p>
-							<p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate flex items-center gap-1.5">
+
+                            <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate flex items-center gap-1.5">
 								<span class="w-1.5 h-1.5 rounded-full bg-lds-gold dark:bg-lds-navy opacity-80"></span>
-								{user.classes.length > 0 ? user.classes.join( ', ' ) : 'Sin clases asignadas'}
+								{ user.classes.length > 0 ? user.classes.join( ', ' ) : 'Sin clases asignadas' }
 							</p>
 						</div>
 
@@ -140,14 +146,16 @@
 						<path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
 					</svg>
 				</div>
-				<p class="text-sm text-gray-700 dark:text-gray-300 font-medium">No se encontraron resultados</p>
-				<p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-[200px] mx-auto">
+
+                <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">No se encontraron resultados</p>
+
+                <p class="text-xs text-gray-500 dark:text-gray-400 mt-1 max-w-[200px] mx-auto">
 					Intenta buscar de nuevo o vuelve para crear tu perfil.
 				</p>
 			</div>
 		{/if}
 	</div>
-</div>
+</section>
 
 <style>
 	.fade-in {

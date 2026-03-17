@@ -1,7 +1,3 @@
-<script lang="ts">
-	// Pantalla de error: acceso solo desde dispositivos móviles
-</script>
-
 <svelte:head>
 	<title>Acceso no autorizado · Asistencia QR</title>
 </svelte:head>

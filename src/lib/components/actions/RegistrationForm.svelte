@@ -11,7 +11,8 @@
 		sessionDate : string;
 		onSuccess   : ( user: ApiUser ) => void;
 	}
-	let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
+
+    let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
 
 	let firstName       = $state( '' );
 	let lastName        = $state( '' );
@@ -35,7 +36,8 @@
 		'institute'          : 'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z',
 	};
 
-	function toggleClass( slug: string ) {
+
+    function toggleClass( slug: string ) {
 		if ( selectedClasses.includes( slug ) ) {
 			selectedClasses = selectedClasses.filter( ( s ) => s !== slug );
 		} else if ( selectedClasses.length < 2 ) {
@@ -43,16 +45,21 @@
 		}
 	}
 
-	function validate(): boolean {
+
+    function validate(): boolean {
 		const newErrors: Record<string, string> = {};
-		if ( !firstName.trim() ) newErrors.firstName = 'El nombre es requerido.';
+
+        if ( !firstName.trim() ) newErrors.firstName = 'El nombre es requerido.';
 		if ( !lastName.trim() ) newErrors.lastName = 'Los apellidos son requeridos.';
 		if ( selectedClasses.length === 0 ) newErrors.classes = 'Selecciona al menos una clase.';
-		errors = newErrors;
-		return Object.keys( newErrors ).length === 0;
+
+        errors = newErrors;
+
+        return Object.keys( newErrors ).length === 0;
 	}
 
-	async function handleSubmit( e: Event ) {
+
+    async function handleSubmit( e: Event ) {
 		e.preventDefault();
 		if ( !validate() ) return;
 		loading = true;
@@ -82,8 +89,7 @@
 	}
 </script>
 
-<div class="w-full">
-
+<section class="w-full">
 	<!-- ═══ Header ════════════════════════════════ -->
 	<div class="text-center mb-8">
 		<div class="relative inline-flex mb-4">
@@ -168,8 +174,8 @@
 						onclick={() => toggleClass( cls.slug )}
 						disabled={isDisabled}
 						class="relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left
-						       border-2 transition-all duration-200 overflow-hidden
-						       disabled:opacity-30 disabled:pointer-events-none"
+                            border-2 transition-all duration-200 overflow-hidden
+                            disabled:opacity-30 disabled:pointer-events-none"
 						style:background-color={isSelected ? 'var(--color-lds-navy)' : undefined}
 						style:border-color={isSelected ? 'var(--color-lds-navy)' : undefined}
 					>
@@ -208,8 +214,8 @@
 						<!-- Borde hover para no seleccionados -->
 						{#if !isSelected}
 							<div class="absolute inset-0 rounded-xl border-2 border-transparent
-							            hover:border-[var(--color-lds-navy)] dark:hover:border-[var(--color-lds-gold)]
-							            transition-colors duration-200 pointer-events-none">
+                                hover:border-lds-navy dark:hover:border-lds-gold
+                                transition-colors duration-200 pointer-events-none">
 							</div>
 						{/if}
 					</button>
@@ -282,12 +288,11 @@
 		<button
 			type="submit"
 			disabled={loading}
-			class="w-full py-4 rounded-xl font-bold text-sm
-			       text-white
-			       hover:opacity-90 hover:scale-[1.01]
-			       active:scale-[0.98]
-			       disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
-			       transition-all duration-200"
+			class="w-full py-4 rounded-xl font-bold text-sm text-white
+                hover:opacity-90 hover:scale-[1.01]
+                active:scale-[0.98]
+                disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
+                transition-all duration-200"
 			style="background-color: var(--color-lds-navy); box-shadow: 0 4px 20px color-mix(in srgb, var(--color-lds-navy) 40%, transparent);"
 		>
 			{#if loading}
@@ -309,7 +314,7 @@
 		</button>
 
 	</form>
-</div>
+</section>
 
 <style>
 	.form-brand-bg {

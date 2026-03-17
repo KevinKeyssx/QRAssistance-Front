@@ -1,8 +1,4 @@
-<script lang="ts">
-	// Sin lógica adicional — pantalla puramente visual
-</script>
-
-<div class="flex flex-col items-center gap-6 animate-slide-up text-center">
+<section class="flex flex-col items-center gap-6 animate-slide-up text-center">
 	<!-- Icono QR expirado -->
 	<div class="relative w-28 h-28">
 		<div class="absolute inset-0 rounded-full bg-amber-100 dark:bg-amber-900/30 animate-pulse-soft"></div>
@@ -28,4 +24,4 @@
 			💡 Los códigos QR son válidos únicamente para la fecha de la reunión.
 		</p>
 	</div>
-</div>
+</section>

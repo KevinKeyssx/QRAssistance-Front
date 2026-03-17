@@ -1,6 +1,6 @@
 <script lang="ts">
-	import type { LDSClass } from '$lib/types';
 	import { LDS_CLASSES } from '$lib/utils/classes';
+
 
 	interface Props {
 		firstName   : string;
@@ -8,10 +8,13 @@
 		classSlug   : string;
 		sessionDate : string;
 	}
-	let { firstName, lastName, classSlug, sessionDate }: Props = $props();
 
-	const classLabel = LDS_CLASSES.find( ( c ) => c.slug === classSlug )?.label ?? classSlug;
+    let { firstName, lastName, classSlug, sessionDate }: Props = $props();
 
+	// svelte-ignore state_referenced_locally
+    const classLabel = LDS_CLASSES.find( ( c ) => c.slug === classSlug )?.label ?? classSlug;
+
+	// svelte-ignore state_referenced_locally
 	const dateFormatted = new Date( sessionDate + 'T12:00:00' ).toLocaleDateString( 'es-ES', {
 		weekday : 'long',
 		year    : 'numeric',
@@ -20,7 +23,7 @@
 	} );
 </script>
 
-<div class="flex flex-col items-center gap-6 animate-slide-up">
+<section class="flex flex-col items-center gap-6 animate-slide-up">
 	<!-- Checkmark animado -->
 	<div class="relative w-28 h-28">
 		<div class="absolute inset-0 rounded-full bg-green-100 dark:bg-green-900/30 animate-pulse-soft"></div>
@@ -41,13 +44,16 @@
 		<p class="text-sm text-gray-500 dark:text-gray-400 mb-1 font-medium uppercase tracking-wider">
 			Asistencia registrada
 		</p>
-		<h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
+
+        <h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
 			¡Bienvenido,
 		</h2>
-		<h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
+
+        <h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
 			{firstName}!
 		</h2>
-		<p class="text-gray-600 dark:text-gray-300 text-base mt-1">
+
+        <p class="text-gray-600 dark:text-gray-300 text-base mt-1">
 			{firstName} {lastName}
 		</p>
 	</div>
@@ -60,9 +66,11 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5"/>
 				</svg>
 			</div>
-			<div>
+
+            <div>
 				<p class="text-xs text-gray-500 dark:text-gray-400">Clase</p>
-				<p class="text-sm font-semibold text-gray-800 dark:text-gray-100">{classLabel}</p>
+
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100">{classLabel}</p>
 			</div>
 		</div>
 
@@ -72,9 +80,11 @@
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
 				</svg>
 			</div>
-			<div>
+
+            <div>
 				<p class="text-xs text-gray-500 dark:text-gray-400">Fecha</p>
-				<p class="text-sm font-semibold text-gray-800 dark:text-gray-100 capitalize">{dateFormatted}</p>
+
+                <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 capitalize">{dateFormatted}</p>
 			</div>
 		</div>
 	</div>
@@ -83,4 +93,4 @@
 	<p class="text-xs text-center text-gray-400 dark:text-gray-600 italic leading-relaxed">
 		"La fe sin obras está muerta." — Santiago 2:17
 	</p>
-</div>
+</section>

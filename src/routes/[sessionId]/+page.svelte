@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { page } from '$app/state';
-	import { onMount } from 'svelte';
-	import { goto } from '$app/navigation';
-	import { env } from '$env/dynamic/public';
+	import { page }     from '$app/state';
+	import { onMount }  from 'svelte';
+	import { goto }     from '$app/navigation';
+	import { env }      from '$env/dynamic/public';
 
 	import { getFingerprint }       from '$lib/utils/fingerprint';
 	import { registerAttendance }   from '$lib/utils/api';
@@ -39,6 +39,8 @@
 	}
 
 	function isValidDate(): boolean {
+        const date = getTodayDate();
+        console.log('🚀 ~ isValidDate ~ date:', date)
 		return urlDate === getTodayDate();
 	}
 
@@ -61,12 +63,14 @@
 		const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 			navigator.userAgent
 		);
-		if ( checkMobile && !isMobile ) {
+
+        if ( checkMobile && !isMobile ) {
 			goto( '/unauthorized' );
 			return;
 		}
 
 		// 2. Validar fecha del QR
+        isValidDate()
 		// if ( !isValidDate() || !sessionId || !classSlug ) {
 		if ( !sessionId || !classSlug ) {
 			currentScreen = 'expired';
@@ -75,18 +79,23 @@
 
 		// 3. ¿Ya registró asistencia hoy en esta sesión? (recarga)
 		const existingUserId = sessionStorage.getItem( attendanceKey );
-		if ( existingUserId ) {
+
+        if ( existingUserId ) {
 			const fingerprint = getFingerprint();
-			welcomeUser = fingerprint
+
+            welcomeUser = fingerprint
 				? { firstName: fingerprint.firstName, lastName: fingerprint.lastName }
 				: { firstName: 'Hermano/a', lastName: '' };
-			currentScreen = 'welcome';
-			return;
+
+            currentScreen = 'welcome';
+
+            return;
 		}
 
 		// 4. ¿Tiene huella digital guardada?
 		const fingerprint = getFingerprint();
-		if ( fingerprint ) {
+
+        if ( fingerprint ) {
 			// Auto-registro con la huella
 			await doRegister( {
 				id        : fingerprint.id,
@@ -101,11 +110,8 @@
 		// Revisamos sessionStorage para saber si ya estuvo en este flujo antes
 		// (y rechazó guardar huella, para no mostrar el formulario sino la búsqueda)
 		const prevRegistered = sessionStorage.getItem( `prev_registered` );
-		if ( prevRegistered ) {
-			currentScreen = 'search';
-		} else {
-			currentScreen = 'register';
-		}
+
+        currentScreen = prevRegistered ? 'search' : 'register';
 	} );
 
 	// ── Callbacks de componentes ─────────────────────────────────────
@@ -135,7 +141,8 @@
 				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
 			</svg>
 		</div>
-		<span class="text-xs font-semibold text-lds-navy dark:text-lds-gold tracking-wide uppercase">
+
+        <span class="text-xs font-semibold text-lds-navy dark:text-lds-gold tracking-wide uppercase">
 			ISUD · Asistencia
 		</span>
 	</div>
@@ -146,7 +153,8 @@
 			<!-- Spinner de carga inicial -->
 			<div class="flex flex-col items-center gap-4 py-10">
 				<div class="w-12 h-12 rounded-full border-4 border-lds-navy/20 dark:border-lds-gold/20 border-t-lds-navy dark:border-t-lds-gold animate-spin"></div>
-				<p class="text-sm text-gray-400 dark:text-gray-500">Verificando sesión...</p>
+
+                <p class="text-sm text-gray-400 dark:text-gray-500">Verificando sesión...</p>
 			</div>
 
 		{:else if currentScreen === 'expired'}
@@ -154,21 +162,21 @@
 
 		{:else if currentScreen === 'register'}
 			<RegistrationForm
-				sessionId={sessionId}
-				classSlug={classSlug}
-				sessionDate={urlDate}
-				onSuccess={handleRegistered}
+				sessionId   = { sessionId }
+				classSlug   = { classSlug }
+				sessionDate = { urlDate }
+				onSuccess   = { handleRegistered }
 			/>
 
 		{:else if currentScreen === 'search'}
-			<UserSearchForm onSuccess={handleSearchSelected} />
+			<UserSearchForm onSuccess={ handleSearchSelected } />
 
 		{:else if currentScreen === 'welcome' && welcomeUser}
 			<WelcomeScreen
-				firstName={welcomeUser.firstName}
-				lastName={welcomeUser.lastName}
-				classSlug={classSlug}
-				sessionDate={urlDate}
+				firstName   = { welcomeUser.firstName }
+				lastName    = { welcomeUser.lastName }
+				classSlug   = { classSlug }
+				sessionDate = { urlDate }
 			/>
 		{/if}
 	</div>
