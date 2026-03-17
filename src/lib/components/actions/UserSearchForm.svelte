@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { searchUsersByName } from '$lib/utils/api';
 	import type { ApiUser } from '$lib/types';
-	import Input from './Input.svelte';
+	import Input from '../shared/Input.svelte';
 
 	interface Props {
 		onSuccess : ( user: ApiUser ) => void;

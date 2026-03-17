@@ -7,10 +7,10 @@
 	import { getFingerprint }       from '$lib/utils/fingerprint';
 	import { registerAttendance }   from '$lib/utils/api';
 
-	import WelcomeScreen        from '$lib/components/WelcomeScreen.svelte';
-	import SessionExpiredScreen from '$lib/components/SessionExpiredScreen.svelte';
-	import RegistrationForm     from '$lib/components/RegistrationForm.svelte';
-	import UserSearchForm       from '$lib/components/UserSearchForm.svelte';
+	import WelcomeScreen        from '$lib/components/actions/WelcomeScreen.svelte';
+	import SessionExpiredScreen from '$lib/components/actions/SessionExpiredScreen.svelte';
+	import RegistrationForm     from '$lib/components/actions/RegistrationForm.svelte';
+	import UserSearchForm       from '$lib/components/actions/UserSearchForm.svelte';
 
 	import type { ApiUser } from '$lib/types';
 

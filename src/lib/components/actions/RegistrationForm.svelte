@@ -3,7 +3,7 @@
 	import { createUser }      from '$lib/utils/api';
 	import { saveFingerprint } from '$lib/utils/fingerprint';
 	import type { UserFingerprint, ApiUser } from '$lib/types';
-	import Input from './Input.svelte';
+	import Input from '../shared/Input.svelte';
 
 	interface Props {
 		sessionId   : string;

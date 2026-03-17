@@ -3,8 +3,8 @@
 
     import favicon                          from '$lib/assets/favicon.svg';
 	import { initDarkMode, setDarkMode }    from '$lib/utils/darkMode';
-    import Header                           from '$lib/components/Header.svelte';
-    import Footer                           from '$lib/components/Footer.svelte';
+    import Header                           from '$lib/components/page/Header.svelte';
+    import Footer                           from '$lib/components/page/Footer.svelte';
 
     import './layout.css';
 

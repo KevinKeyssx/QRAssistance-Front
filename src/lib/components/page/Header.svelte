@@ -1,5 +1,5 @@
 <script lang="ts">
-    import DarkModeToggle from '$lib/components/DarkModeToggle.svelte';
+    import DarkModeToggle from '$lib/components/page/DarkModeToggle.svelte';
 
     interface Props {
         darkMode : boolean;
