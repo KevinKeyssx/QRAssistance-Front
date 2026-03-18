@@ -70,7 +70,7 @@
 		}
 
 		// 2. Validar fecha del QR
-        isValidDate()
+        // isValidDate()
 		// if ( !isValidDate() || !sessionId || !classSlug ) {
 		if ( !sessionId || !classSlug ) {
 			currentScreen = 'expired';
@@ -129,7 +129,7 @@
 </script>
 
 <svelte:head>
-	<title>Asistencia · ISUD</title>
+	<title>QRAsistencia · Barrio La Cisterna</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -143,7 +143,7 @@
 		</div>
 
         <span class="text-xs font-semibold text-lds-navy dark:text-lds-gold tracking-wide uppercase">
-			ISUD · Asistencia
+			QR Asistencia
 		</span>
 	</div>
 
