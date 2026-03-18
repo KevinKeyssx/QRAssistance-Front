@@ -18,6 +18,7 @@
 	let lastName        = $state( '' );
 	let selectedClasses = $state<string[]>( [] );
 	let saveFingerPrint = $state( false );
+	let saveTerms       = $state( false );
 	let loading         = $state( false );
 	let errors          = $state<Record<string, string>>( {} );
 
@@ -154,8 +155,10 @@
 					Clase(s)
 				</span>
 				<span class="text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-200"
-					style:background-color={selectedClasses.length > 0 ? 'var(--color-lds-navy)' : undefined}
-					style:color={selectedClasses.length > 0 ? 'white' : undefined}
+					class:bg-lds-navy={selectedClasses.length > 0}
+					class:text-white={selectedClasses.length > 0}
+					class:dark:bg-lds-gold={selectedClasses.length > 0}
+					class:dark:text-gray-900={selectedClasses.length > 0}
 					class:bg-gray-100={selectedClasses.length === 0}
 					class:text-gray-400={selectedClasses.length === 0}
 					class:dark:bg-gray-700={selectedClasses.length === 0}
@@ -176,19 +179,20 @@
 						class="relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left
                             border-2 transition-all duration-200 overflow-hidden
                             disabled:opacity-30 disabled:pointer-events-none"
-						style:background-color={isSelected ? 'var(--color-lds-navy)' : undefined}
-						style:border-color={isSelected ? 'var(--color-lds-navy)' : undefined}
+						class:bg-lds-navy={isSelected}
+						class:border-lds-navy={isSelected}
+						class:dark:bg-lds-gold={isSelected}
+						class:dark:border-lds-gold={isSelected}
 					>
 						<!-- Ícono contenedor -->
-						<div class="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors"
-							class:bg-gray-100={!isSelected}
-							class:dark:bg-gray-700={!isSelected}
-							style:background-color={isSelected ? 'rgba(255,255,255,0.2)' : undefined}
+						<div class="shrink-0 w-7 h-7 rounded-lg flex items-center justify-center transition-colors
+							{isSelected ? 'bg-white/20 dark:bg-gray-900/20' : 'bg-gray-100 dark:bg-gray-700'}"
 						>
 							<svg class="w-3.5 h-3.5 transition-colors"
 								class:text-gray-500={!isSelected}
 								class:dark:text-gray-400={!isSelected}
-								style:color={isSelected ? 'white' : undefined}
+								class:text-white={isSelected}
+								class:dark:text-gray-900={isSelected}
 								fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"
 							>
 								<path stroke-linecap="round" stroke-linejoin="round" d={CLASS_ICONS[ cls.slug ] ?? 'M12 4v16m8-8H4'}/>
@@ -199,14 +203,15 @@
 						<span class="text-xs font-semibold leading-tight flex-1 transition-colors"
 							class:text-gray-700={!isSelected}
 							class:dark:text-gray-300={!isSelected}
-							style:color={isSelected ? 'white' : undefined}
+							class:text-white={isSelected}
+							class:dark:text-gray-900={isSelected}
 						>
 							{cls.label}
 						</span>
 
 						<!-- Check -->
 						{#if isSelected}
-							<svg class="w-3.5 h-3.5 shrink-0" style="color: white;" fill="currentColor" viewBox="0 0 20 20">
+							<svg class="w-3.5 h-3.5 shrink-0 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 20 20">
 								<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/>
 							</svg>
 						{/if}
@@ -232,24 +237,70 @@
 			{/if}
 		</div>
 
+
+        <label for="terms-consent" class="flex items-start gap-3 cursor-pointer rounded-xl p-4 transition-all duration-200 border-2"
+			class:bg-gray-50={!saveTerms}
+			class:dark:bg-gray-800={!saveTerms}
+			class:border-gray-200={!saveTerms}
+			class:dark:border-gray-600={!saveTerms}
+			class:bg-lds-navy={saveTerms}
+			class:border-lds-navy={saveTerms}
+			class:dark:bg-lds-gold={saveTerms}
+			class:dark:border-lds-gold={saveTerms}
+		>
+			<!-- Checkbox visual -->
+			<div class="mt-0.5 shrink-0">
+				<input id="terms-consent" type="checkbox" bind:checked={saveTerms} class="sr-only"/>
+				<div class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200
+					{saveTerms ? 'bg-white/25 dark:bg-gray-900/25 border-white/60 dark:border-gray-900/60' : 'border-lds-navy dark:border-lds-gold'}"
+				>
+					{#if saveTerms}
+						<svg class="w-3 h-3 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 20 20">
+							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+						</svg>
+					{/if}
+				</div>
+			</div>
+
+			<div>
+				<p class="text-sm font-semibold leading-tight transition-colors"
+					class:text-gray-800={!saveTerms}
+					class:dark:text-gray-100={!saveTerms}
+					class:text-white={saveTerms}
+					class:dark:text-gray-900={saveTerms}
+				>
+					Declaro que mis datos son reales
+				</p>
+				<p class="text-xs mt-1 leading-relaxed transition-colors italic
+					{saveTerms ? 'text-white/75 dark:text-gray-900/75' : 'text-gray-500 dark:text-gray-400'}"
+				>
+					"¡Ay de aquel que miente, porque será empujado al infierno!"
+                    <span class="text-xs mt-1 leading-relaxed transition-colors font-semibold
+					{saveTerms ? 'text-white/75 dark:text-gray-900/75' : 'text-gray-500 dark:text-gray-400'}"
+					>2 Nefi 9:34</span>
+				</p>
+			</div>
+		</label>
+
 		<!-- ═══ Huella digital ═════════════════════ -->
 		<label for="fingerprint-consent" class="flex items-start gap-3 cursor-pointer rounded-xl p-4 transition-all duration-200 border-2"
 			class:bg-gray-50={!saveFingerPrint}
 			class:dark:bg-gray-800={!saveFingerPrint}
 			class:border-gray-200={!saveFingerPrint}
 			class:dark:border-gray-600={!saveFingerPrint}
-			style:background-color={saveFingerPrint ? 'var(--color-lds-navy)' : undefined}
-			style:border-color={saveFingerPrint ? 'var(--color-lds-navy)' : undefined}
+			class:bg-lds-navy={saveFingerPrint}
+			class:border-lds-navy={saveFingerPrint}
+			class:dark:bg-lds-gold={saveFingerPrint}
+			class:dark:border-lds-gold={saveFingerPrint}
 		>
 			<!-- Checkbox visual -->
 			<div class="mt-0.5 shrink-0">
 				<input id="fingerprint-consent" type="checkbox" bind:checked={saveFingerPrint} class="sr-only"/>
-				<div class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200"
-					style:background-color={saveFingerPrint ? 'rgba(255,255,255,0.25)' : undefined}
-					style:border-color={saveFingerPrint ? 'rgba(255,255,255,0.6)' : 'var(--color-lds-navy)'}
+				<div class="w-5 h-5 rounded-md border-2 flex items-center justify-center transition-all duration-200
+					{saveFingerPrint ? 'bg-white/25 dark:bg-gray-900/25 border-white/60 dark:border-gray-900/60' : 'border-lds-navy dark:border-lds-gold'}"
 				>
 					{#if saveFingerPrint}
-						<svg class="w-3 h-3" style="color: white;" fill="currentColor" viewBox="0 0 20 20">
+						<svg class="w-3 h-3 text-white dark:text-gray-900" fill="currentColor" viewBox="0 0 20 20">
 							<path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
 						</svg>
 					{/if}
@@ -260,14 +311,13 @@
 				<p class="text-sm font-semibold leading-tight transition-colors"
 					class:text-gray-800={!saveFingerPrint}
 					class:dark:text-gray-100={!saveFingerPrint}
-					style:color={saveFingerPrint ? 'white' : undefined}
+					class:text-white={saveFingerPrint}
+					class:dark:text-gray-900={saveFingerPrint}
 				>
 					Recordar mis datos en este dispositivo
 				</p>
-				<p class="text-xs mt-1 leading-relaxed transition-colors"
-					class:text-gray-500={!saveFingerPrint}
-					class:dark:text-gray-400={!saveFingerPrint}
-					style:color={saveFingerPrint ? 'rgba(255,255,255,0.75)' : undefined}
+				<p class="text-xs mt-1 leading-relaxed transition-colors
+					{saveFingerPrint ? 'text-white/75 dark:text-gray-900/75' : 'text-gray-500 dark:text-gray-400'}"
 				>
 					Identificación automática en futuras reuniones sin reingresar datos.
 				</p>
@@ -288,12 +338,12 @@
 		<button
 			type="submit"
 			disabled={loading}
-			class="w-full py-4 rounded-xl font-bold text-sm text-white
+			class="w-full py-4 rounded-xl font-bold text-sm text-white dark:text-gray-900
+                bg-lds-navy dark:bg-lds-gold shadow-btn-nav
                 hover:opacity-90 hover:scale-[1.01]
                 active:scale-[0.98]
                 disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
                 transition-all duration-200"
-			style="background-color: var(--color-lds-navy); box-shadow: 0 4px 20px color-mix(in srgb, var(--color-lds-navy) 40%, transparent);"
 		>
 			{#if loading}
 				<span class="flex items-center justify-center gap-2">
@@ -325,11 +375,19 @@
 		color : white;
 	}
 
+	.shadow-btn-nav {
+		box-shadow : 0 4px 20px color-mix( in srgb, var( --color-lds-navy ) 40%, transparent );
+	}
+
 	:global( .dark ) .form-brand-bg {
 		background-color : var( --color-lds-gold );
 	}
 
 	:global( .dark ) .form-brand-icon-color {
 		color : #111827;
+	}
+
+	:global( .dark ) .shadow-btn-nav {
+		box-shadow : 0 4px 20px color-mix( in srgb, var( --color-lds-gold ) 40%, transparent );
 	}
 </style>
