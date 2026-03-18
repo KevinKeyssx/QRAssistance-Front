@@ -25,7 +25,7 @@
 
 <section class="flex flex-col items-center gap-6 animate-slide-up">
 	<!-- Checkmark animado -->
-	<div class="relative w-28 h-28">
+	<div class="relative w-24 h-24">
 		<div class="absolute inset-0 rounded-full bg-green-100 dark:bg-green-900/30 animate-pulse-soft"></div>
 		<div class="absolute inset-2 rounded-full bg-green-500 flex items-center justify-center shadow-lg">
 			<svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -45,17 +45,13 @@
 			Asistencia registrada
 		</p>
 
-        <h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
+        <h2 class="text-2xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
 			¡Bienvenido,
 		</h2>
 
-        <h2 class="text-3xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
-			{firstName}!
+        <h2 class="text-2xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
+			{firstName} {lastName}!
 		</h2>
-
-        <p class="text-gray-600 dark:text-gray-300 text-base mt-1">
-			{firstName} {lastName}
-		</p>
 	</div>
 
 	<!-- Detalles -->
@@ -74,7 +70,7 @@
 			</div>
 		</div>
 
-		<div class="flex items-center gap-3 bg-lds-navy/5 dark:bg-lds-gold/10 rounded-xl px-4 py-3">
+		<!-- <div class="flex items-center gap-3 bg-lds-navy/5 dark:bg-lds-gold/10 rounded-xl px-4 py-3">
 			<div class="w-8 h-8 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shrink-0">
 				<svg class="w-4 h-4 text-white dark:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
 					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/>
@@ -86,7 +82,7 @@
 
                 <p class="text-sm font-semibold text-gray-800 dark:text-gray-100 capitalize">{dateFormatted}</p>
 			</div>
-		</div>
+		</div> -->
 	</div>
 
 	<!-- Mensaje inspirador -->
