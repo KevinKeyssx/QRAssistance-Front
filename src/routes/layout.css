@@ -3,7 +3,7 @@
 @variant dark (&:where(.dark, .dark *));
 
 @theme {
-    --color-lds-navy : #1a3a5c;
+    --color-lds-navy : #007da5;
     --color-lds-gold : #c9a227;
 }
 
