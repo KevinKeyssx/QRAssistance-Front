@@ -1,5 +1,9 @@
-<footer class="w-full py-6 mt-auto relative z-10 text-center shadow-inner border-t border-gray-200 dark:border-gray-600">
-    <p class="text-sm text-gray-500 dark:text-gray-300">
-        La Iglesia de Jesucristo de los Santos de los Últimos Días
-    </p>
+<footer class="w-full mt-auto relative flex flex-col items-center justify-center border-t border-gray-200 dark:border-gray-800 bg-transparent py-1 sm:py-10 border-b-4" >
+    <div class="relative z-10 flex shrink-0 items-center justify-center w-32 sm:w-40 md:w-48">
+		<img
+            src     = "/spa.png"
+            alt     = "La Iglesia de Jesucristo de los Santos de los Últimos Días"
+            class   = "w-full h-auto object-contain pointer-events-none dark:invert transition-all"
+        />
+	</div>
 </footer>
