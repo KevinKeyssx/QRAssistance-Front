@@ -4,15 +4,14 @@
 	import { goto }     from '$app/navigation';
 	import { env }      from '$env/dynamic/public';
 
+	import type { ApiUser }         from '$lib/types';
 	import { getFingerprint }       from '$lib/utils/fingerprint';
 	import { registerAttendance }   from '$lib/utils/api';
-
-	import WelcomeScreen        from '$lib/components/actions/WelcomeScreen.svelte';
-	import SessionExpiredScreen from '$lib/components/actions/SessionExpiredScreen.svelte';
-	import RegistrationForm     from '$lib/components/actions/RegistrationForm.svelte';
-	import UserSearchForm       from '$lib/components/actions/UserSearchForm.svelte';
-
-	import type { ApiUser } from '$lib/types';
+	import WelcomeScreen            from '$lib/components/actions/WelcomeScreen.svelte';
+	import SessionExpiredScreen     from '$lib/components/actions/SessionExpiredScreen.svelte';
+	import RegistrationForm         from '$lib/components/actions/RegistrationForm.svelte';
+	import UserSearchForm           from '$lib/components/actions/UserSearchForm.svelte';
+    import QRIcon                   from '$lib/icons/QRIcon.svelte';
 
 	// ── Parámetros de URL ───────────────────────────────────────────
 	const sessionId : string = page.params.sessionId ?? '';
@@ -137,9 +136,7 @@
 	<!-- Logo pequeño fijo arriba -->
 	<div class="mb-6 flex items-center gap-2 animate-fade-in">
 		<div class="w-8 h-8 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shadow">
-			<svg class="w-4 h-4 text-white dark:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l9-9 9 9M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9"/>
-			</svg>
+			<QRIcon />
 		</div>
 
         <span class="text-xs font-semibold text-lds-navy dark:text-lds-gold tracking-wide uppercase">
