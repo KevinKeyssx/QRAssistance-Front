@@ -1,0 +1,22 @@
+export const VERSES_BOOK_MORMON = [
+    "La fe sin obras está muerta. — Santiago 2:17",
+    "El amor sea sin fingimiento. Aborreced lo malo, seguid lo bueno. — Romanos 12:9",
+    "Todo lo puedo en Cristo que me fortalece. — Filipenses 4:13",
+    "Cuando os halláis al servicio de vuestros semejantes, solo estáis al servicio de vuestro Dios. — Mosíah 2:17",
+    "La caridad es el amor puro de Cristo, y permanece para siempre. — Moroni 7:47",
+    "Pide, y se te dará; busca, y hallarás; llama, y se te abrirá. — Mateo 7:7",
+    "Porque donde esté vuestro tesoro, allí estará también vuestro corazón. — Mateo 6:21",
+    "Iré y haré lo que el Señor ha mandado. — 1 Nefi 3:7",
+    "El hombre es para que tenga gozo. — 2 Nefi 2:25",
+    "Si Dios es por nosotros, ¿quién contra nosotros? — Romanos 8:31",
+    "Confía en Jehová con todo tu corazón, y no te apoyes en tu propia prudencia. — Proverbios 3:5",
+    "La respuesta blanda quita la ira; mas la palabra áspera hace subir el furor. — Proverbios 15:1",
+    "Sed, pues, misericordiosos, como también vuestro Padre es misericordioso. — Lucas 6:36",
+    "Cree en el Señor Jesucristo y serás salvo. — Hechos 16:31",
+    "Y ahora, permanecen la fe, la esperanza y la caridad; pero la mayor de ellas es la caridad. — 1 Corintios 13:13",
+    "He aquí, yo soy la luz; yo os he dado el ejemplo. — 3 Nefi 18:16",
+    "No temas, porque yo estoy contigo; no desmayes, porque yo soy tu Dios. — Isaías 41:10",
+    "Lámpara es a mis pies tu palabra, y lumbre a mi camino. — Salmos 119:105",
+    "Bienaventurados los pacificadores, porque ellos serán llamados hijos de Dios. — Mateo 5:9",
+    "Venid a mí todos los que estáis trabajados y cargados, y yo os haré descansar. — Mateo 11:28"
+];
