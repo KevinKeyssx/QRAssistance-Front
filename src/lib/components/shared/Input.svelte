@@ -46,7 +46,7 @@
                 </span>
             </div>
         {/if}
-        
+
         <input
             {id}
             {type}
@@ -56,10 +56,10 @@
             {disabled}
             {oninput}
             class="w-full py-3.5 rounded-xl text-sm font-medium outline-none transition-all duration-200
-                   bg-gray-50 dark:bg-gray-800/60 text-gray-900 dark:text-white
-                   placeholder:text-gray-400 dark:placeholder:text-gray-600
-                   border-2 border-gray-200 dark:border-gray-600
-                   focus:border-lds-navy dark:focus:border-lds-gold"
+                bg-gray-50 dark:bg-gray-800/60 text-gray-900 dark:text-white
+                placeholder:text-gray-400 dark:placeholder:text-gray-600
+                border-2 border-gray-200 dark:border-gray-600
+                focus:border-lds-navy dark:focus:border-lds-gold"
             class:pl-10={!!icon}
             class:pl-4={!icon}
             class:pr-10={!!rightIcon || (showSuccess && value && !error)}
@@ -67,7 +67,7 @@
             class:border-red-400={!!error}
             class:dark:border-red-500={!!error}
         />
-        
+
         {#if rightIcon}
             <div class="absolute inset-y-0 right-0 pr-3.5 flex items-center pointer-events-none">
                 {@render rightIcon()}
