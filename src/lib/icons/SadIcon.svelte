@@ -1,5 +1,5 @@
 <script lang="ts">
-    let { size = 18 }: { size?: number } = $props();
+    let { size = 24 }: { size?: number } = $props();
 </script>
 
 <svg
@@ -12,9 +12,11 @@
     stroke-width="2"
     stroke-linecap="round"
     stroke-linejoin="round"
-    class="icon icon-tabler icons-tabler-outline icon-tabler-user"
+    class="icon icon-tabler icons-tabler-outline icon-tabler-mood-sad"
 >
     <path stroke="none" d="M0 0h24v24H0z" fill="none" />
-    <path d="M8 7a4 4 0 1 0 8 0a4 4 0 0 0 -8 0" />
-    <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+    <path d="M3 12a9 9 0 1 0 18 0a9 9 0 1 0 -18 0" />
+    <path d="M9 10l.01 0" />
+    <path d="M15 10l.01 0" />
+    <path d="M9.5 15.25a3.5 3.5 0 0 1 5 0" />
 </svg>
