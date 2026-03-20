@@ -3,6 +3,8 @@
 export interface LDSClass {
 	slug  : string;
 	label : string;
+	icon  : any;
+    classCompatible: string[];
 }
 
 export interface UserFingerprint {
