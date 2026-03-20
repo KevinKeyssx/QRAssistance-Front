@@ -3,15 +3,17 @@
         UserFingerprint,
         ApiUser
     }                           from '$lib/types';
-	import { LDS_CLASSES }      from '$lib/utils/classes';
-	import { createUser }       from '$lib/utils/api';
-	import { saveFingerprint }  from '$lib/utils/fingerprint';
 	import Input                from '$lib/components/shared/Input.svelte';
 	import Check                from '$lib/components/shared/Check.svelte';
+    import AuraLoader           from '$lib/components/loaders/AuraLoader.svelte';
     import UserCircleIcon       from '$lib/icons/UserCircleIcon.svelte';
     import UserIcon             from '$lib/icons/UserIcon.svelte';
     import UserLastName         from '$lib/icons/UserLastNameIcon.svelte';
     import SendIcon             from '$lib/icons/SendIcon.svelte';
+    import CautionIcon          from '$lib/icons/CautionIcon.svelte';
+	import { createUser }       from '$lib/utils/api';
+	import { LDS_CLASSES }      from '$lib/utils/classes';
+	import { saveFingerprint }  from '$lib/utils/fingerprint';
 
 
 	interface Props {
@@ -215,11 +217,6 @@
 							{cls.label}
 						</span>
 
-						<!-- Check -->
-						<!-- {#if isSelected}
-                            <CheckIcon />
-						{/if} -->
-
 						<!-- Borde hover para no seleccionados -->
 						{#if !isSelected}
 							<div class="absolute inset-0 rounded-xl border-2 border-transparent
@@ -233,10 +230,9 @@
 
 			{#if errors.classes}
 				<p class="mt-2 text-xs text-red-500 dark:text-red-400 flex items-center gap-1">
-					<svg class="w-3.5 h-3.5 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-						<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-					</svg>
-					{errors.classes}
+                    <CautionIcon size={16} />
+
+                    { errors.classes }
 				</p>
 			{/if}
 		</div>
@@ -248,9 +244,10 @@
 			error           = { errors.terms }
 		>
 			{#snippet description()}
-				<span class="italic">"¡Ay de aquel que miente, porque será empujado al infierno!"</span>
-
-                <span class="font-semibold">2 Nefi 9:34</span>
+                <div>
+                    <span class="italic">"¡Ay de aquel que miente, porque será empujado al infierno!"</span>
+                    <span class="font-semibold">2 Nefi 9:34</span>
+                </div>
 			{/snippet}
 		</Check>
 
@@ -268,10 +265,11 @@
 		<!-- Error global -->
 		{#if errors.global}
 			<div class="rounded-xl px-4 py-3 bg-red-50 dark:bg-red-950/40 border border-red-200 dark:border-red-900 flex items-center gap-2">
-				<svg class="w-4 h-4 text-red-500 dark:text-red-400 shrink-0" fill="currentColor" viewBox="0 0 20 20">
-					<path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
-				</svg>
-				<p class="text-sm text-red-600 dark:text-red-400">{errors.global}</p>
+                <CautionIcon size={16} />
+
+                <p class="text-sm text-red-600 dark:text-red-400">
+                    { errors.global }
+                </p>
 			</div>
 		{/if}
 
@@ -288,10 +286,7 @@
 		>
 			{#if loading}
 				<span class="flex items-center justify-center gap-2">
-					<svg class="w-4 h-4 animate-spin" fill="none" viewBox="0 0 24 24">
-						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-					</svg>
+                    <AuraLoader />
 
                     Registrando asistencia...
 				</span>
