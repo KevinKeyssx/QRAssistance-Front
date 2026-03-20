@@ -132,10 +132,10 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="flex flex-col items-center justify-center w-full px-5 py-10">
+<main class="flex flex-col items-center justify-center w-full px-5 py-10 mt-16 sm:mt-8">
 	<!-- Logo pequeño fijo arriba -->
 	<div class="mb-6 flex items-center gap-2 animate-fade-in">
-		<div class="w-8 h-8 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shadow">
+		<div class="w-8 h-8 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shadow text-white">
 			<QRIcon />
 		</div>
 
