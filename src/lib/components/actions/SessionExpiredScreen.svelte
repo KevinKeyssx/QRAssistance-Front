@@ -1,12 +1,13 @@
+<script lang="ts">
+    import WarningIcon from '$lib/icons/WarningIcon.svelte';
+</script>
+
 <section class="flex flex-col items-center gap-6 animate-slide-up text-center">
 	<!-- Icono QR expirado -->
 	<div class="relative w-28 h-28">
 		<div class="absolute inset-0 rounded-full bg-amber-100 dark:bg-amber-900/30 animate-pulse-soft"></div>
-		<div class="absolute inset-2 rounded-full bg-amber-500 flex items-center justify-center shadow-lg">
-			<svg class="w-12 h-12 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-				<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5"
-					d="M12 9v4m0 4h.01M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"/>
-			</svg>
+		<div class="absolute inset-2 rounded-full bg-amber-500 flex items-center justify-center shadow-lg text-white">
+			<WarningIcon size={48} />
 		</div>
 	</div>
 
