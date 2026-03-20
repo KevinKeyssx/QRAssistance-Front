@@ -1,7 +1,12 @@
 <script lang="ts">
-	import { searchUsersByName }    from '$lib/utils/api';
-	import type { ApiUser }         from '$lib/types';
 	import Input                    from '$lib/components/shared/Input.svelte';
+    import AuraLoader               from '$lib/components/loaders/AuraLoader.svelte';
+    import SearchIcon               from '$lib/icons/SearchIcon.svelte';
+    import UserIcon                 from '$lib/icons/UserIcon.svelte';
+	import { searchUsersByName }    from '$lib/utils/api';
+    import SadIcon                  from '$lib/icons/SadIcon.svelte';
+    import RightArrownIcon          from '$lib/icons/RightArrownIcon.svelte';
+	import type { ApiUser }         from '$lib/types';
 
 
     interface Props {
@@ -10,8 +15,30 @@
 
     let { onSuccess }: Props = $props();
 
+
+    const users: ApiUser[] = [
+        {
+            id:'1',
+            firstName: 'Juan',
+            lastName: 'Perez',
+            classes: ['Clase 1', 'Clase 2']
+        },
+        {
+            id: '2',
+            firstName: 'Maria',
+            lastName: 'Gomez',
+            classes: ['Clase 1', 'Clase 2']
+        },
+        {
+            id: '3',
+            firstName: 'Pedro',
+            lastName: 'Ramirez',
+            classes: ['Clase 1', 'Clase 2']
+        }
+    ];
+
 	let query      = $state( '' );
-	let results    = $state<ApiUser[]>( [] );
+	let results    = $state<ApiUser[]>( users );
 	let searching  = $state( false );
 	let searched   = $state( false );
 	let debounceId = $state<ReturnType<typeof setTimeout> | null>( null );
@@ -47,52 +74,46 @@
 	<!-- ═══ Header ════════════════════════════════ -->
 	<div class="text-center mb-8">
 		<div class="relative inline-flex mb-4">
-			<div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg bg-lds-navy dark:bg-lds-gold shadow-lds-navy/30 dark:shadow-lds-gold/20">
-				<svg class="w-8 h-8 text-white dark:text-gray-900" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-				</svg>
+			<div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg bg-lds-navy dark:bg-lds-gold shadow-lds-navy/30 dark:shadow-lds-gold/20 text-white dark:text-gray-800">
+                <SearchIcon size={32} />
 			</div>
-			<!-- Badge secundario -->
-            <span class="absolute -top-1 -right-1 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border border-gray-100 dark:border-gray-700 flex items-center justify-center shadow-sm">
-				<svg class="w-3 h-3 text-lds-navy dark:text-lds-gold" fill="currentColor" viewBox="0 0 20 20">
-					<path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
-				</svg>
+
+            <!-- Badge secundario -->
+            <span class="absolute -top-1 -right-1 w-5 h-5 bg-white dark:bg-gray-800 rounded-full border border-gray-100 dark:border-gray-700 flex items-center justify-center shadow-sm text-lds-navy dark:text-lds-gold">
+                <UserIcon size={12}/>
 			</span>
 		</div>
-		<h2 class="text-2xl font-bold text-gray-900 dark:text-white">Busca tu nombre</h2>
-		<p class="text-sm text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs mx-auto leading-relaxed">
+
+        <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Busca tu nombre</h2>
+
+        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs mx-auto leading-relaxed">
 			Ingresa tu nombre o apellido para encontrarte en la lista.
 		</p>
 	</div>
 
 	<!-- ═══ Búsqueda ════════════════════════════ -->
 	<Input
-		id="search"
-		bind:value={query}
-		type="search"
-		placeholder="Ej: Juan Pérez"
-		autocomplete="off"
-		showSuccess={false}
-		oninput={handleInput}
+		id              = "search"
+		bind:value      = { query }
+		type            = "search"
+		placeholder     = "Ej: Juan Pérez"
+		autocomplete    = "off"
+		showSuccess     = { false }
+		oninput         = { handleInput }
 	>
 		{#snippet icon()}
-			<svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-				<path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
-			</svg>
+			<SearchIcon />
 		{/snippet}
 
         {#snippet rightIcon()}
 			{#if searching}
-				<svg class="w-5 h-5 text-lds-navy dark:text-lds-gold animate-spin" fill="none" viewBox="0 0 24 24">
-					<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
-					<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z"/>
-				</svg>
+                <AuraLoader />
 			{/if}
 		{/snippet}
 	</Input>
 
 	{#if query.trim().length > 0 && query.trim().length < 2 && !searching}
-		<p class="text-xs text-gray-400 dark:text-gray-500 mt-3 text-center fade-in">
+		<p class="text-xs text-red-300 dark:text-red-700 mt-3 text-center fade-in">
 			Escribe al menos 2 caracteres para buscar
 		</p>
 	{/if}
@@ -131,21 +152,17 @@
 						</div>
 
 						<!-- Flecha indicadora -->
-						<div class="shrink-0 transition-transform duration-200 group-hover:translate-x-1">
-							<svg class="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-lds-navy dark:group-hover:text-lds-gold" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-								<path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
-							</svg>
+						<div class="shrink-0 transition-transform duration-200 group-hover:translate-x-1 text-gray-300 dark:text-gray-500">
+                            <RightArrownIcon />
 						</div>
 					</button>
 				{/each}
 			</div>
 		{:else if searched && query.trim().length >= 2}
 			<div class="py-8 text-center fade-in">
-				<div class="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-3">
-					<svg class="w-8 h-8 text-gray-400 dark:text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
-						<path stroke-linecap="round" stroke-linejoin="round" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/>
-					</svg>
-				</div>
+				<span class="w-16 h-16 rounded-full bg-gray-50 dark:bg-gray-800/50 flex items-center justify-center mx-auto mb-3 text-gray-400 dark:text-gray-400">
+                    <SadIcon size={32} />
+				</span>
 
                 <p class="text-sm text-gray-700 dark:text-gray-300 font-medium">No se encontraron resultados</p>
 
