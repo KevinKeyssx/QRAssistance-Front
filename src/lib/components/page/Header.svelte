@@ -7,15 +7,13 @@
 	}
 
 	let { darkMode, onToggle } : Props = $props( );
-
-	let rayColor = $derived( darkMode ? 'var(--color-lds-gold)' : 'var(--color-lds-navy)' );
 </script>
 
 <header class="fixed top-0 w-full h-18 bg-white flex justify-between items-center z-50 border-b border-gray-200 shadow-sm dark:bg-gray-900 dark:border-gray-800 transition-colors pointer-events-none">
 	<div class="h-full flex items-center pointer-events-auto shrink-0 relative">
 		<a href="/" class="flex h-full items-center no-underline relative group">
 			<!-- Se usa el archivo original como máscara CSS. Esto conserva la resolución y aspecto de la <img> original pero te permite teñirlo de los colores de layout.css dinámicamente -->
-			<div class="ml-[-24px] absolute top-0 left-0 h-full w-64 md:w-80 object-fill pointer-events-none z-0 bg-lds-navy dark:bg-lds-gold transition-colors" 
+			<div class="ml-[-24px] sm:ml-[-12px] absolute top-0 left-0 h-full w-64 object-fill pointer-events-none z-0 bg-lds-navy dark:bg-lds-gold transition-colors" 
 				style="mask-image: url('/blueRays.svg'); mask-size: 100% 100%; -webkit-mask-image: url('/blueRays.svg'); -webkit-mask-size: 100% 100%; mask-repeat: no-repeat; -webkit-mask-repeat: no-repeat;">
 			</div>
 
@@ -27,7 +25,7 @@
 			<div class="w-20 shrink-0 relative z-10"></div>
 		</a>
 
-        <div class="ml-9 sm:ml-5 flex flex-col justify-center relative z-50">
+        <div class="ml-9 sm:ml-12 flex flex-col justify-center relative z-50">
             <span class="uppercase text-gray-800 dark:text-gray-300 font-medium tracking-wider" style="font-size: 10px; line-height: 1.2;">Barrio</span>
             <span class="font-serif uppercase text-lds-navy dark:text-lds-gold font-semibold tracking-wider" style="font-size: 21px; line-height: 1.1;">La Cisterna</span>
         </div>
