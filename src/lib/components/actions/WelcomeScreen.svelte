@@ -37,6 +37,11 @@
     }
 </script>
 
+<svelte:head>
+	<title>Bienvenido · QRAsistencia</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <section class="flex flex-col items-center gap-6 animate-slide-up">
 	<!-- Checkmark animado -->
 	<div class="relative w-22 h-22">

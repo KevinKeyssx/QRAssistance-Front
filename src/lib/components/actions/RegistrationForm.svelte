@@ -104,6 +104,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Registro · QRAsistencia</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <section class="w-full">
 	<!-- ═══ Header ════════════════════════════════ -->
 	<div class="text-center mb-8">

@@ -70,6 +70,11 @@
 	}
 </script>
 
+<svelte:head>
+	<title>Búsqueda de usuario · QRAsistencia</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <section class="animate-slide-up w-full">
 	<!-- ═══ Header ════════════════════════════════ -->
 	<div class="text-center mb-8">

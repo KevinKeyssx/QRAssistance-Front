@@ -2,6 +2,11 @@
     import WarningIcon from '$lib/icons/WarningIcon.svelte';
 </script>
 
+<svelte:head>
+	<title>Sesión expirada · QRAsistencia</title>
+	<meta name="robots" content="noindex" />
+</svelte:head>
+
 <section class="flex flex-col items-center gap-6 animate-slide-up text-center">
 	<!-- Icono QR expirado -->
 	<div class="relative w-28 h-28">

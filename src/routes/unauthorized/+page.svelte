@@ -1,5 +1,6 @@
 <svelte:head>
 	<title>Acceso no autorizado · Asistencia QR</title>
+	<meta name="robots" content="noindex" />
 </svelte:head>
 
 <main class="flex flex-col items-center justify-center min-h-dvh px-6 bg-lds-light dark:bg-lds-dark">
