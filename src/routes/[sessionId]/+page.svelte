@@ -34,22 +34,28 @@
 		const y   = now.getFullYear();
 		const m   = String( now.getMonth() + 1 ).padStart( 2, '0' );
 		const d   = String( now.getDate() ).padStart( 2, '0' );
-		return `${y}-${m}-${d}`;
+
+        return `${y}-${m}-${d}`;
 	}
 
-	function isValidDate(): boolean {
+
+    function isValidDate(): boolean {
         const date = getTodayDate();
         console.log('🚀 ~ isValidDate ~ date:', date)
 		return urlDate === getTodayDate();
 	}
 
-	async function doRegister( user: ApiUser ) {
+
+    async function doRegister( user: ApiUser ) {
 		registering = true;
-		try {
+
+        try {
 			await registerAttendance( sessionId, user.id, urlDate, classSlug );
-			sessionStorage.setItem( attendanceKey, user.id );
-			welcomeUser = { firstName: user.firstName, lastName: user.lastName };
-			currentScreen = 'welcome';
+
+            sessionStorage.setItem( attendanceKey, user.id );
+
+            welcomeUser     = { firstName: user.firstName, lastName: user.lastName };
+			currentScreen   = 'welcome';
 		} finally {
 			registering = false;
 		}
