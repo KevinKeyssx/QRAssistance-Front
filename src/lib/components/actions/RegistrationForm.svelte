@@ -17,13 +17,14 @@
 
 
 	interface Props {
-		sessionId   : string;
-		classSlug   : string;
-		sessionDate : string;
+		// sessionId   : string;
+		// classSlug   : string;
+		// sessionDate : string;
 		onSuccess   : ( user: ApiUser ) => void;
 	}
 
-    let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
+    // let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
+    let { onSuccess }: Props = $props();
 
 	let firstName       = $state( '' );
 	let lastName        = $state( '' );

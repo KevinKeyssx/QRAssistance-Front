@@ -18,5 +18,5 @@ export const LDS_CLASSES: LDSClass[] = [
 	{ slug: 'young-women',          label: 'Mujeres jóvenes',           icon: YoungWomenIcon, classCompatible: [ 'sunday-school-young' ]},
 	{ slug: 'jas',                  label: 'JAS',                       icon: JASIcon,        classCompatible: [ 'quorum-elders', 'relief-society', 'sunday-school-adults' ]},
 	{ slug: 'friends',              label: 'Clase amigos',              icon: FriendsIcon,    classCompatible: [ 'quorum-elders', 'relief-society', 'sunday-school-adults' ] },
-	{ slug: 'primary',              label: 'Primaria',                  icon: PrimaryIcon,    classCompatible: [] },
+	// { slug: 'primary',              label: 'Primaria',                  icon: PrimaryIcon,    classCompatible: [] },
 ];

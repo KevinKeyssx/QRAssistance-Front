@@ -15,7 +15,7 @@
 
 	// ── Parámetros de URL ───────────────────────────────────────────
 	const sessionId : string = page.params.sessionId ?? '';
-	const urlDate   : string = page.url.searchParams.get( 'date' )   ?? '';
+	// const urlDate   : string = page.url.searchParams.get( 'date' )   ?? '';
 	const classSlug : string = page.url.searchParams.get( 'class' )  ?? '';
 
 	// ── Estados de la pantalla ──────────────────────────────────────
@@ -26,7 +26,8 @@
 	let registering    = $state( false );
 
 	// Clave única para saber si ya registró asistencia hoy en esta sesión
-	const attendanceKey = `att:${sessionId}:${urlDate}`;
+	// const attendanceKey = `att:${sessionId}:${urlDate}`;
+	const attendanceKey = `att:${sessionId}`;
 
 	// ── Utilidades ──────────────────────────────────────────────────
 	function getTodayDate(): string {
@@ -39,18 +40,18 @@
 	}
 
 
-    function isValidDate(): boolean {
-        const date = getTodayDate();
-        console.log('🚀 ~ isValidDate ~ date:', date)
-		return urlDate === getTodayDate();
-	}
+    // function isValidDate(): boolean {
+    //     const date = getTodayDate();
+    //     console.log('🚀 ~ isValidDate ~ date:', date)
+	// 	return urlDate === getTodayDate();
+	// }
 
 
     async function doRegister( user: ApiUser ) {
 		registering = true;
 
         try {
-			await registerAttendance( sessionId, user.id, urlDate, classSlug );
+			// await registerAttendance( sessionId, user.id, urlDate, classSlug );
 
             sessionStorage.setItem( attendanceKey, user.id );
 
@@ -165,9 +166,9 @@
 
 		{:else if currentScreen === 'register'}
 			<RegistrationForm
-				sessionId   = { sessionId }
-				classSlug   = { classSlug }
-				sessionDate = { urlDate }
+				// sessionId   = { sessionId }
+				// classSlug   = { classSlug }
+				// sessionDate = { urlDate }
 				onSuccess   = { handleRegistered }
 			/>
 
@@ -179,7 +180,7 @@
 				firstName   = { welcomeUser.firstName }
 				lastName    = { welcomeUser.lastName }
 				classSlug   = { classSlug }
-				sessionDate = { urlDate }
+				// sessionDate = { urlDate }
 			/>
 		{/if}
 	</div>
