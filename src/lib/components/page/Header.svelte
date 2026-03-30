@@ -18,8 +18,8 @@
 			</div>
 
 			<!-- Logo posicionado usando absolute -->
-			<div class="absolute top-0 left-0 h-full flex items-center shrink-0 z-10 pointer-events-none bg-lds-navy dark:bg-lds-gold min-w-4/5 transition-colors">
-				<img src="/symbolSmall.png" alt="Símbolo" class="h-3/5 object-contain ml-5" />
+			<div class="absolute top-0 left-0 h-full flex items-center shrink-0 z-10 pointer-events-none bg-lds-navy dark:bg-lds-gold min-w-4/5 transition-colors ">
+                <img src="/logo.avif" alt="logo" class="h-[45%] object-contain ml-5 bg-white p-1 rounded-md shadow-sm" />
 			</div>
 
 			<div class="w-20 shrink-0 relative z-10"></div>
