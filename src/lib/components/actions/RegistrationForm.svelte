@@ -13,14 +13,10 @@
 
 
 	interface Props {
-		// sessionId   : string;
-		// classSlug   : string;
-		// sessionDate : string;
 		onSuccess        : ( user: ApiUser ) => void;
 		onSwitchToSearch : () => void;
 	}
 
-    // let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
     let { onSuccess, onSwitchToSearch }: Props = $props();
 
 	let firstName       = $state( '' );
@@ -37,7 +33,7 @@
             last_name  : string;
             classes    : string[];
             saveFinger : boolean;
-        } ) => {
+        }) => {
             const res = await fetch( '/api/register-member', {
                 method  : 'POST',
                 headers : { 'Content-Type': 'application/json' },
@@ -45,21 +41,22 @@
             });
 
             const data = await res.json();
-            
+
             if ( !res.ok ) throw { status: res.status, data };
-            
+
             return data;
         },
         onSuccess: ( data: any ) => {
             if ( saveFingerPrint && data.ulid_token ) {
                 sessionStorage.setItem( 'ULID_TOKEN', data.ulid_token );
             }
-            
+
             const user: ApiUser = {
                 id        : data.id || 'temp-id',
                 firstName : firstName.trim(),
                 lastName  : lastName.trim(),
-                classes   : selectedClasses
+                classes   : selectedClasses,
+                ulidToken : data.ulid_token || ''
             };
 
             onSuccess( user );
