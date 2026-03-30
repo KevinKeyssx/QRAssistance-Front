@@ -1,76 +1,91 @@
 <script lang="ts">
-	import Input                    from '$lib/components/shared/Input.svelte';
-    import AuraLoader               from '$lib/components/loaders/AuraLoader.svelte';
-    import SearchIcon               from '$lib/icons/SearchIcon.svelte';
-    import UserIcon                 from '$lib/icons/UserIcon.svelte';
-    import SadIcon                  from '$lib/icons/SadIcon.svelte';
-    import RightArrownIcon          from '$lib/icons/RightArrownIcon.svelte';
-	import type { ApiUser }         from '$lib/types';
+    import { createQuery } from '@tanstack/svelte-query';
+
+    import Input            from '$lib/components/shared/Input.svelte';
+    import AuraLoader       from '$lib/components/loaders/AuraLoader.svelte';
+    import SearchIcon       from '$lib/icons/SearchIcon.svelte';
+    import UserIcon         from '$lib/icons/UserIcon.svelte';
+    import SadIcon          from '$lib/icons/SadIcon.svelte';
+    import RightArrownIcon  from '$lib/icons/RightArrownIcon.svelte';
+    import Dialog           from '$lib/components/shared/Dialog.svelte';
+    import Check            from '$lib/components/shared/Check.svelte';
+	import type { ApiUser } from '$lib/types';
 
 
     interface Props {
-		onSuccess : ( user: ApiUser ) => void;
+		onSuccess : ( member: ApiUser ) => void;
 	}
 
     let { onSuccess }: Props = $props();
 
+	let query                    = $state( '' );
+	let searchQuery              = $state( '' );
+    let showDialog               = $state( false );
+    let saveFingerPrint          = $state( false );
+    let selectedMemberForConfirm = $state<ApiUser | null>( null );
 
-    const users: ApiUser[] = [
-        {
-            id:'1',
-            firstName: 'Juan',
-            lastName: 'Perez',
-            classes: ['Clase 1', 'Clase 2']
-        },
-        {
-            id: '2',
-            firstName: 'Maria',
-            lastName: 'Gomez',
-            classes: ['Clase 1', 'Clase 2']
-        },
-        {
-            id: '3',
-            firstName: 'Pedro',
-            lastName: 'Ramirez',
-            classes: ['Clase 1', 'Clase 2']
+
+    const searchQueryOptions = createQuery(() => ({
+        queryKey    : ['searchMembers', searchQuery],
+        enabled     : searchQuery.trim().length >= 2,
+        queryFn     : async () => {
+            const encoded   = encodeURIComponent( searchQuery.trim() );
+            const res       = await fetch( `/api/search-member?q=${encoded}&page=1&size=20` );
+            const data      = await res.json();
+
+            if ( !res.ok ) throw { status: res.status, data };
+
+            return ( data.items || [] ).map(( item: any ) => ({
+                id        : item._id,
+                firstName : item.name,
+                lastName  : item.last_name,
+                classes   : item.classes || [],
+                ulidToken : item.ulid_token || ''
+            }));
         }
-    ];
+    }));
 
-	let query      = $state( '' );
-	let results    = $state<ApiUser[]>( users );
-	let searching  = $state( false );
-	let searched   = $state( false );
-	let debounceId = $state<ReturnType<typeof setTimeout> | null>( null );
+
+    let results   = $derived( searchQueryOptions.data || [] );
+    let searching = $derived( searchQueryOptions.isLoading || searchQueryOptions.isFetching );
+    let searched  = $derived( searchQueryOptions.isSuccess && !searching && searchQuery.trim().length >= 2 );
 
 
     function handleInput() {
-		if ( debounceId ) clearTimeout( debounceId );
+        if ( query.trim().length === 0 && searchQuery !== '' ) {
+            searchQuery = '';
+        }
+    }
 
-        if ( query.trim().length < 2 ) {
-			results = [];
-			searched = false;
-			return;
-		}
 
-        debounceId = setTimeout( async () => {
-			searching = true;
-			searched  = false;
-			try {
-				results  = [];
-				searched = true;
-			} finally {
-				searching = false;
-			}
-		}, 400 );
+    function triggerSearch() {
+        if ( query.trim().length >= 2 ) {
+            searchQuery = query.trim();
+        }
+    }
+
+
+    function selectMember( member: ApiUser ) {
+		selectedMemberForConfirm = member;
+        showDialog = true;
 	}
 
-	function selectUser( user: ApiUser ) {
-		onSuccess( user );
-	}
+
+    function confirmSelection() {
+        if ( selectedMemberForConfirm ) {
+            if ( saveFingerPrint && selectedMemberForConfirm.ulidToken ) {
+                sessionStorage.setItem( 'ULID_TOKEN', selectedMemberForConfirm.ulidToken );
+            }
+
+            onSuccess( selectedMemberForConfirm );
+        }
+
+        showDialog = false;
+    }
 </script>
 
 <svelte:head>
-	<title>Búsqueda de usuario · QRAsistencia</title>
+	<title>Búsqueda · QRAsistencia</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
@@ -96,25 +111,37 @@
 	</div>
 
 	<!-- ═══ Búsqueda ════════════════════════════ -->
-	<Input
-		id              = "search"
-		bind:value      = { query }
-		type            = "search"
-		placeholder     = "Ej: Juan Pérez"
-		autocomplete    = "off"
-		showSuccess     = { false }
-		oninput         = { handleInput }
-	>
-		{#snippet icon()}
-			<SearchIcon />
-		{/snippet}
+    <form
+        onsubmit={(e) => { e.preventDefault(); triggerSearch(); }}
+        class= "flex gap-1.5"
+    >
+        <Input
+            id              = "search"
+            bind:value      = { query }
+            type            = "search"
+            placeholder     = "Ej: Juan Pérez"
+            autocomplete    = "off"
+            showSuccess     = { false }
+            oninput         = { handleInput }
+        >
+            {#snippet icon()}
+                <SearchIcon />
+            {/snippet}
+        </Input>
 
-        {#snippet rightIcon()}
-			{#if searching}
+        <button
+            type        = "submit"
+            disabled    = { searching || query.trim().length < 2 }
+            class       = "w-16 flex flex-col items-center justify-center rounded-xl text-white dark:text-gray-900 bg-lds-navy dark:bg-lds-gold hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer font-bold"
+            title       = "Buscar"
+        >
+            {#if searching}
                 <AuraLoader />
-			{/if}
-		{/snippet}
-	</Input>
+            {:else}
+                <SearchIcon size={20} />
+            {/if}
+        </button>
+    </form>
 
 	{#if query.trim().length > 0 && query.trim().length < 2 && !searching}
 		<p class="text-xs text-red-300 dark:text-red-700 mt-3 text-center fade-in">
@@ -125,11 +152,11 @@
 	<!-- ═══ Resultados ════════════════════════════ -->
 	<div class="mt-4">
 		{#if results.length > 0}
-			<div class="space-y-2 fade-in">
+			<div class="space-y-2 fade-in max-h-64 overflow-y-auto">
 				{#each results as user ( user.id )}
 					<button
 						type="button"
-						onclick={() => selectUser( user )}
+						onclick={() => selectMember( user )}
 						class="group relative w-full flex items-center gap-4 px-4 py-3.5 rounded-xl text-left overflow-hidden border-2 transition-all duration-200
                             bg-white dark:bg-gray-800 
                             border-gray-100 dark:border-gray-700
@@ -146,7 +173,7 @@
 						<!-- Datos -->
 						<div class="flex-1 min-w-0">
 							<p class="text-sm font-bold text-gray-900 dark:text-gray-100 truncate transition-colors duration-200 group-hover:text-lds-navy dark:group-hover:text-lds-gold">
-								{ user.firstName} {user.lastName }
+								{ user.firstName } { user.lastName }
 							</p>
 
                             <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate flex items-center gap-1.5">
@@ -177,6 +204,52 @@
 		{/if}
 	</div>
 </section>
+
+<Dialog
+    open        = { showDialog }
+    title       = "Confirmar Selección"
+    description = "Por favor confirma que eres este miembro de la lista."
+    onClose     = { () => showDialog = false }
+>
+    {#if selectedMemberForConfirm}
+        <div class="flex flex-col gap-4">
+            <div class="p-4 bg-gray-50 dark:bg-gray-800/50 rounded-xl border border-gray-100 dark:border-gray-700">
+                <p class="text-sm text-gray-700 dark:text-gray-300">
+                    ¿Confirmas que tu nombre es <span class="font-bold text-gray-900 dark:text-gray-100">{selectedMemberForConfirm.firstName} {selectedMemberForConfirm.lastName}</span>?
+                </p>
+            </div>
+
+            <!-- ═══ Huella digital ═════════════════════ -->
+            <Check
+                id              = "fingerprint-consent"
+                bind:checked    = { saveFingerPrint }
+                title           = "Recordarme en este dispositivo"
+            >
+                {#snippet description()}
+                    <span>Identificación automática en futuras reuniones sin reingresar datos.</span>
+                {/snippet}
+            </Check>
+
+            <div class="flex items-center gap-3 mt-4">
+                <button
+                    type    = "button"
+                    class   = "flex-1 px-4 py-3 rounded-xl font-bold text-sm text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 transition-colors cursor-pointer"
+                    onclick = { () => showDialog = false }
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type    = "button"
+                    class   = "flex-1 px-4 py-3 rounded-xl font-bold text-sm text-white bg-lds-navy dark:bg-lds-gold hover:opacity-90 transition-opacity flex items-center justify-center cursor-pointer"
+                    onclick = { confirmSelection }
+                >
+                    Confirmar
+                </button>
+            </div>
+        </div>
+    {/if}
+</Dialog>
 
 <style>
 	.fade-in {
