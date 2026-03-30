@@ -21,10 +21,11 @@
 
 <main class="flex flex-col items-center justify-center">
 	<div class="animate-fade-in text-center">
-		<div class="mb-8 flex flex-col items-center space-y-5">
+		<div class="flex flex-col items-center space-y-8">
             <div class="flex items-center gap-3">
                 <div class="w-14 h-14 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shadow-lg text-white">
-                    <QRIcon size={30}/>
+                    <!-- <QRIcon size={30}/> -->
+                    <img src="/logo.avif" alt="logo" class="h-[60%] object-contain bg-white p-1 rounded-md shadow-sm" />
                 </div>
 
                 <h1 class="text-2xl font-bold text-lds-navy dark:text-lds-gold">
@@ -32,7 +33,7 @@
                 </h1>
             </div>
 
-            <img src="/symbolFull.webp" alt="Logo ISUD" class="fit-content">
+            <img src="/logo.avif" alt="logo" class="h-36 object-contain" />
 
             <p class="text-sm text-gray-500 dark:text-gray-400">
 				La Iglesia de Jesucristo de los Santos de los Últimos Días
