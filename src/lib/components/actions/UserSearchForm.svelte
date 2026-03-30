@@ -3,7 +3,6 @@
     import AuraLoader               from '$lib/components/loaders/AuraLoader.svelte';
     import SearchIcon               from '$lib/icons/SearchIcon.svelte';
     import UserIcon                 from '$lib/icons/UserIcon.svelte';
-	import { searchUsersByName }    from '$lib/utils/api';
     import SadIcon                  from '$lib/icons/SadIcon.svelte';
     import RightArrownIcon          from '$lib/icons/RightArrownIcon.svelte';
 	import type { ApiUser }         from '$lib/types';
@@ -57,7 +56,7 @@
 			searching = true;
 			searched  = false;
 			try {
-				results  = await searchUsersByName( query.trim() );
+				results  = [];
 				searched = true;
 			} finally {
 				searching = false;
