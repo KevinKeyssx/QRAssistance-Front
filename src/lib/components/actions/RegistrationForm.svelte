@@ -112,8 +112,8 @@
 
 <section class="w-full">
 	<!-- ═══ Header ════════════════════════════════ -->
-	<div class="text-center mb-8">
-		<div class="relative inline-flex mb-4">
+	<div class="text-center mb-4 space-y-4">
+		<div class="relative inline-flex">
 			<div class="w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg form-brand-bg text-white">
 				<UserCircleIcon />
 			</div>
@@ -127,12 +127,12 @@
 
         <h2 class="text-2xl font-bold text-gray-900 dark:text-white">Crear tu perfil</h2>
 
-        <p class="text-sm text-gray-500 dark:text-gray-400 mt-1.5 max-w-xs mx-auto leading-relaxed">
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-xs mx-auto leading-relaxed">
 			Solo toma unos segundos. Completa tus datos para registrar tu asistencia.
 		</p>
 	</div>
 
-	<form onsubmit={handleSubmit} class="space-y-6" novalidate>
+	<form onsubmit={handleSubmit} class="space-y-4" novalidate>
 		<!-- ═══ Inputs ════════════════════════════ -->
 		<div class="space-y-4">
 			<!-- Nombre -->
@@ -166,11 +166,12 @@
 
 		<!-- ═══ Selección de clases ════════════════ -->
 		<div>
-			<div class="flex items-center justify-between mb-3">
+			<div class="flex items-center justify-between mb-4">
 				<span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-widest">
 					Clase(s)
 				</span>
-				<span class="text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-200"
+
+                <span class="text-xs font-bold px-2.5 py-1 rounded-full transition-all duration-200"
 					class:bg-lds-navy={selectedClasses.length > 0}
 					class:text-white={selectedClasses.length > 0}
 					class:dark:bg-lds-gold={selectedClasses.length > 0}
@@ -191,8 +192,9 @@
                         selectedClasses.length >= 2 ||
                         ( compatibleClasses !== null && !compatibleClasses.includes( cls.slug ) )
                     )}
-					{@const Icon       = cls.icon}
-					<button
+					{@const Icon = cls.icon}
+
+                    <button
 						type="button"
 						onclick={() => toggleClass( cls.slug )}
 						disabled={isDisabled}
@@ -279,31 +281,48 @@
 			</div>
 		{/if}
 
-		<!-- ═══ Submit ═════════════════════════════ -->
-		<button
-			type="submit"
-			disabled={loading}
-			class="w-full py-4 rounded-xl font-bold text-sm text-white dark:text-gray-900
-                bg-lds-navy dark:bg-lds-gold shadow-btn-nav
-                hover:opacity-90 hover:scale-[1.01]
-                active:scale-[0.98]
-                disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
-                transition-all duration-200"
-		>
-			{#if loading}
-				<span class="flex items-center justify-center gap-2">
+        <div class="space-y-2">
+            <!-- ═══ Submit ═════════════════════════════ -->
+            <button
+                type="submit"
+                disabled={loading}
+                class="w-full py-4 rounded-xl font-bold text-sm text-white
+                    bg-lds-navy dark:bg-lds-gold shadow-btn-nav
+                    hover:opacity-90 hover:scale-[1.01]
+                    active:scale-[0.98]
+                    disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
+                    transition-all duration-200
+                    flex items-center justify-center gap-2"
+            >
+                {#if loading}
                     <AuraLoader />
 
                     Registrando asistencia...
-				</span>
-			{:else}
-				<span class="flex items-center justify-center gap-2 text-white dark:text-gray-800">
+                {:else}
                     <SendIcon />
 
                     Registrar asistencia
-				</span>
-			{/if}
-		</button>
+                {/if}
+            </button>
+
+            <p class="text-sm text-gray-500 dark:text-gray-400 text-center">¿No eres miembro de la iglesia?</p>
+
+            <button
+                onclick={() => {}}
+                class="w-full py-4 rounded-xl font-bold text-sm text-white 
+                    bg-lds-navy dark:bg-lds-gold shadow-btn-nav
+                    hover:opacity-90 hover:scale-[1.01]
+                    active:scale-[0.98]
+                    disabled:opacity-60 disabled:cursor-not-allowed disabled:hover:scale-100
+                    transition-all duration-200
+                    flex items-center gap-2 text-center mx-auto justify-center
+                    "
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" class="icon icon-tabler icons-tabler-filled icon-tabler-ghost-2"><path stroke="none" d="M0 0h24v24H0z" fill="none" /><path d="M12 1.999l.041 .002l.208 .003a8 8 0 0 1 7.747 7.747l.003 .248l.177 .006a3 3 0 0 1 2.819 2.819l.005 .176a3 3 0 0 1 -3 3l-.001 1.696l1.833 2.75a1 1 0 0 1 -.72 1.548l-.112 .006h-10c-3.445 .002 -6.327 -2.49 -6.901 -5.824l-.028 -.178l-.071 .001a3 3 0 0 1 -2.995 -2.824l-.005 -.175a3 3 0 0 1 3 -3l.004 -.25a8 8 0 0 1 7.996 -7.75zm0 10.001a2 2 0 0 0 -2 2a1 1 0 0 0 1 1h2a1 1 0 0 0 1 -1a2 2 0 0 0 -2 -2zm-1.99 -4l-.127 .007a1 1 0 0 0 .117 1.993l.127 -.007a1 1 0 0 0 -.117 -1.993zm4 0l-.127 .007a1 1 0 0 0 .117 1.993l.127 -.007a1 1 0 0 0 -.117 -1.993z" /></svg>
+
+                Soy una visita
+            </button>
+        </div>
 	</form>
 </section>
 
