@@ -1,8 +1,5 @@
 <script lang="ts">
-	import type {
-        UserFingerprint,
-        ApiUser
-    }                           from '$lib/types';
+	import type { ApiUser }     from '$lib/types';
 	import Input                from '$lib/components/shared/Input.svelte';
 	import Check                from '$lib/components/shared/Check.svelte';
     import AuraLoader           from '$lib/components/loaders/AuraLoader.svelte';
@@ -11,28 +8,71 @@
     import UserLastName         from '$lib/icons/UserLastNameIcon.svelte';
     import SendIcon             from '$lib/icons/SendIcon.svelte';
     import CautionIcon          from '$lib/icons/CautionIcon.svelte';
-	import { createUser }       from '$lib/utils/api';
 	import { LDS_CLASSES }      from '$lib/utils/classes';
-	import { saveFingerprint }  from '$lib/utils/fingerprint';
+    import { createMutation }   from '@tanstack/svelte-query';
 
 
 	interface Props {
 		// sessionId   : string;
 		// classSlug   : string;
 		// sessionDate : string;
-		onSuccess   : ( user: ApiUser ) => void;
+		onSuccess        : ( user: ApiUser ) => void;
+		onSwitchToSearch : () => void;
 	}
 
     // let { sessionId, classSlug, sessionDate, onSuccess }: Props = $props();
-    let { onSuccess }: Props = $props();
+    let { onSuccess, onSwitchToSearch }: Props = $props();
 
 	let firstName       = $state( '' );
 	let lastName        = $state( '' );
 	let selectedClasses = $state<string[]>( [] );
 	let saveFingerPrint = $state( false );
 	let saveTerms       = $state( false );
-	let loading         = $state( false );
+	let isDuplicate     = $state( false );
 	let errors          = $state<Record<string, string>>( {} );
+
+    const registerMutation = createMutation(() => ({
+        mutationFn: async ( payload: {
+            name       : string;
+            last_name  : string;
+            classes    : string[];
+            saveFinger : boolean;
+        } ) => {
+            const res = await fetch( '/api/register-member', {
+                method  : 'POST',
+                headers : { 'Content-Type': 'application/json' },
+                body    : JSON.stringify( payload )
+            });
+
+            const data = await res.json();
+            
+            if ( !res.ok ) throw { status: res.status, data };
+            
+            return data;
+        },
+        onSuccess: ( data: any ) => {
+            if ( saveFingerPrint && data.ulid_token ) {
+                sessionStorage.setItem( 'ULID_TOKEN', data.ulid_token );
+            }
+            
+            const user: ApiUser = {
+                id        : data.id || 'temp-id',
+                firstName : firstName.trim(),
+                lastName  : lastName.trim(),
+                classes   : selectedClasses
+            };
+
+            onSuccess( user );
+        },
+        onError: ( err: any ) => {
+            if ( err.status === 400 ) {
+                isDuplicate = true;
+                errors = {};
+            } else {
+                errors = { global: 'Ocurrió un error al registrar. Intenta de nuevo.' };
+            }
+        }
+    }));
 
 
     let compatibleClasses = $derived.by(() => {
@@ -74,34 +114,16 @@
     async function handleSubmit( e: Event ): Promise<void> {
 		e.preventDefault();
 
+        isDuplicate = false;
+
         if ( !validate() ) return;
 
-        loading = true;
-
-        try {
-			const user = await createUser({
-				firstName : firstName.trim(),
-				lastName  : lastName.trim(),
-				classes   : selectedClasses
-			});
-
-			if ( saveFingerPrint ) {
-				const fingerprint: UserFingerprint = {
-					id        : user.id,
-					firstName : user.firstName,
-					lastName  : user.lastName,
-					classes   : user.classes
-				};
-
-                saveFingerprint( fingerprint );
-			}
-
-			onSuccess( user );
-		} catch {
-			errors = { global: 'Ocurrió un error al registrar. Intenta de nuevo.' };
-		} finally {
-			loading = false;
-		}
+        registerMutation.mutate({
+            name       : firstName.trim(),
+            last_name  : lastName.trim(),
+            classes    : selectedClasses,
+            saveFinger : saveFingerPrint
+        });
 	}
 </script>
 
@@ -281,11 +303,41 @@
 			</div>
 		{/if}
 
+        <!-- Miembro Duplicado Error y Botón de Búsqueda -->
+        {#if isDuplicate}
+			<div class="rounded-xl px-4 py-3 bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-900 flex flex-col gap-3">
+                <div class="flex items-center gap-2">
+                    <div class="text-orange-500 flex justify-center items-center">
+                        <CautionIcon size={16} />
+                    </div>
+                    
+                    <p class="text-sm font-semibold text-orange-700 dark:text-orange-300">
+                        Miembro ya registrado
+                    </p>
+                </div>
+                
+                <p class="text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
+                    Este miembro ya existe. Puede buscarse en el listado o intentar con su segundo nombre y su segundo apellido.
+                </p>
+                
+                <button
+                    type="button"
+                    onclick={onSwitchToSearch}
+                    class="w-full py-2.5 rounded-xl font-bold text-xs text-orange-700 dark:text-orange-300
+                        bg-orange-100 dark:bg-orange-900/50 hover:bg-orange-200 dark:hover:bg-orange-800/50
+                        transition-colors duration-200 flex items-center justify-center gap-2 mt-1"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path stroke="none" d="M0 0h24v24H0z" fill="none"/><path d="M10 10m-7 0a7 7 0 1 0 14 0a7 7 0 1 0 -14 0" /><path d="M21 21l-6 -6" /></svg>
+                    Buscarse en el listado
+                </button>
+			</div>
+		{/if}
+
         <div class="space-y-2">
             <!-- ═══ Submit ═════════════════════════════ -->
             <button
                 type="submit"
-                disabled={loading}
+                disabled={registerMutation.isPending}
                 class="w-full py-4 rounded-xl font-bold text-sm text-white
                     bg-lds-navy dark:bg-lds-gold shadow-btn-nav
                     hover:opacity-90 hover:scale-[1.01]
@@ -294,7 +346,7 @@
                     transition-all duration-200
                     flex items-center justify-center gap-2"
             >
-                {#if loading}
+                {#if registerMutation.isPending}
                     <AuraLoader />
 
                     Registrando asistencia...
