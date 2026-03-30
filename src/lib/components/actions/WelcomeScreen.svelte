@@ -15,18 +15,16 @@
 		firstName   : string;
 		lastName    : string;
 		classSlug   : string;
-		// sessionDate : string;
 	}
 
 
     onMount( animateConfetti );
 
 
-    // let { firstName, lastName, classSlug, sessionDate }: Props = $props();
     let { firstName, lastName, classSlug }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
-    const classLabel = LDS_CLASSES.find( ( c ) => c.slug === classSlug )?.label ?? classSlug;
+    const classLabel = LDS_CLASSES.find(( c ) => c.slug === classSlug )?.label ?? classSlug;
 
 
     function animateConfetti() {
