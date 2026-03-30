@@ -11,6 +11,9 @@ importers:
       '@formkit/tempo':
         specifier: ^1.0.0
         version: 1.0.0
+      '@tanstack/svelte-query':
+        specifier: ^6.1.10
+        version: 6.1.10(svelte@5.53.12)
       canvas-confetti:
         specifier: ^1.9.4
         version: 1.9.4
@@ -487,6 +490,14 @@ packages:
     resolution: {integrity: sha512-TBf2sJjYeb28jD2U/OhwdW0bbOsxkWPwQ7SrqGf9sVcoYwZj7rkXljroBO9wKBut9XnmQLXanuDUeqQK0lGg/w==}
     peerDependencies:
       vite: ^5.2.0 || ^6 || ^7
+
+  '@tanstack/query-core@5.95.2':
+    resolution: {integrity: sha512-o4T8vZHZET4Bib3jZ/tCW9/7080urD4c+0/AUaYVpIqOsr7y0reBc1oX3ttNaSW5mYyvZHctiQ/UOP2PfdmFEQ==}
+
+  '@tanstack/svelte-query@6.1.10':
+    resolution: {integrity: sha512-YrRIIlTfmkkCiLwQ+bxFg/Ltil9RoRjiBlJHx0CBh5+9ZRbvKzBqYBncpGTEwW2AdSJfYimgoBABFmCa5q+6qw==}
+    peerDependencies:
+      svelte: ^5.25.0
 
   '@types/canvas-confetti@1.9.0':
     resolution: {integrity: sha512-aBGj/dULrimR1XDZLtG9JwxX1b4HPRF6CX9Yfwh3NvstZEm1ZL7RBnel4keCPSqs1ANRu1u2Aoz9R+VmtjYuTg==}
@@ -1097,6 +1108,13 @@ snapshots:
       '@tailwindcss/oxide': 4.2.1
       tailwindcss: 4.2.1
       vite: 7.3.1(jiti@2.6.1)(lightningcss@1.31.1)
+
+  '@tanstack/query-core@5.95.2': {}
+
+  '@tanstack/svelte-query@6.1.10(svelte@5.53.12)':
+    dependencies:
+      '@tanstack/query-core': 5.95.2
+      svelte: 5.53.12
 
   '@types/canvas-confetti@1.9.0': {}
 
