@@ -198,7 +198,8 @@
 				// sessionId   = { sessionId }
 				// classSlug   = { classSlug }
 				// sessionDate = { urlDate }
-				onSuccess   = { handleRegistered }
+				onSuccess        = { handleRegistered }
+				onSwitchToSearch = { () => currentScreen = 'search' }
 			/>
 
 		{:else if currentScreen === 'search'}
