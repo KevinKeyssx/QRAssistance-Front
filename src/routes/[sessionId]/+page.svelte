@@ -4,66 +4,108 @@
 	import { goto }     from '$app/navigation';
 	import { env }      from '$env/dynamic/public';
 
-	import type { ApiUser }         from '$lib/types';
-	import { getFingerprint }       from '$lib/utils/fingerprint';
-	import { registerAttendance }   from '$lib/utils/api';
-	import WelcomeScreen            from '$lib/components/actions/WelcomeScreen.svelte';
-	import SessionExpiredScreen     from '$lib/components/actions/SessionExpiredScreen.svelte';
-	import RegistrationForm         from '$lib/components/actions/RegistrationForm.svelte';
-	import UserSearchForm           from '$lib/components/actions/UserSearchForm.svelte';
-    import QRIcon                   from '$lib/icons/QRIcon.svelte';
+    import { createQuery } from '@tanstack/svelte-query';
 
-	// ── Parámetros de URL ───────────────────────────────────────────
-	const sessionId : string = page.params.sessionId ?? '';
-	// const urlDate   : string = page.url.searchParams.get( 'date' )   ?? '';
-	const classSlug : string = page.url.searchParams.get( 'class' )  ?? '';
+	import type { ApiUser }     from '$lib/types';
+	import { getFingerprint }   from '$lib/utils/fingerprint';
+	import WelcomeScreen        from '$lib/components/actions/WelcomeScreen.svelte';
+	import SessionExpiredScreen from '$lib/components/actions/SessionExpiredScreen.svelte';
+	import RegistrationForm     from '$lib/components/actions/RegistrationForm.svelte';
+	import UserSearchForm       from '$lib/components/actions/UserSearchForm.svelte';
+    import { LDS_CLASSES }      from '$lib/utils/classes';
 
-	// ── Estados de la pantalla ──────────────────────────────────────
+    // ── Estados de la pantalla ──────────────────────────────────────
 	type Screen = 'loading' | 'expired' | 'register' | 'search' | 'welcome';
 
-	let currentScreen  = $state<Screen>( 'loading' );
-	let welcomeUser    = $state<{ firstName: string; lastName: string } | null>( null );
-	let registering    = $state( false );
+	// ── Parámetros de URL ───────────────────────────────────────────
+	const sessionId : string    = page.params.sessionId ?? '';
+	const classSlug : string    = page.url.searchParams.get( 'class' )  ?? '';
+    const classes   : string[]  = LDS_CLASSES.map(( c ) => c.slug );
 
-	// Clave única para saber si ya registró asistencia hoy en esta sesión
-	// const attendanceKey = `att:${sessionId}:${urlDate}`;
-	const attendanceKey = `att:${sessionId}`;
+    // ── Estados ── 
+	let currentScreen   = $state<Screen>( 'loading' );
+	let welcomeUser     = $state<{ firstName: string; lastName: string } | null>( null );
+	let registering     = $state( false );
+	let readyToFetch    = $state<boolean>( false );
+    let ulidToken       = $state<string>( '' );
 
-	// ── Utilidades ──────────────────────────────────────────────────
-	function getTodayDate(): string {
-		const now = new Date();
-		const y   = now.getFullYear();
-		const m   = String( now.getMonth() + 1 ).padStart( 2, '0' );
-		const d   = String( now.getDate() ).padStart( 2, '0' );
+	// ── Svelte Query: Validación de Asistencia Backend ──────────────
+	const attendanceQuery = createQuery(() => ({
+		queryKey                : ['kwedfasdfsdfda', sessionId, classSlug ],
+		enabled                 : readyToFetch,
+		retry                   : false,
+		refetchOnWindowFocus    : false,
+		queryFn                 : async () => {
+			const response = await fetch( '/api/validate-assistance', {
+				method  : 'POST',
+				headers : { 'Content-Type': 'application/json' },
+				body    : JSON.stringify({
+                    sessionId,
+                    ulidToken
+                })
+			});
 
-        return `${y}-${m}-${d}`;
-	}
+            let data;
+
+            const text = await response.text();
+
+            try {
+                data = text ? JSON.parse( text ) : {};
+            } catch {
+                data = { message: text };
+            }
+
+			if ( !response.ok ) {
+				throw { status: response.status, data };
+			}
+
+            return data;
+		},
+	}));
 
 
-    // function isValidDate(): boolean {
-    //     const date = getTodayDate();
-    //     console.log('🚀 ~ isValidDate ~ date:', date)
-	// 	return urlDate === getTodayDate();
-	// }
+    $effect(() => {
+		if ( !readyToFetch ) return;
 
+		if ( attendanceQuery.isSuccess ) {
+			const fp = getFingerprint();
 
-    async function doRegister( user: ApiUser ) {
-		registering = true;
-
-        try {
-			// await registerAttendance( sessionId, user.id, urlDate, classSlug );
-
-            sessionStorage.setItem( attendanceKey, user.id );
-
-            welcomeUser     = { firstName: user.firstName, lastName: user.lastName };
-			currentScreen   = 'welcome';
-		} finally {
-			registering = false;
+            welcomeUser = fp
+				? { firstName: fp.firstName, lastName: fp.lastName }
+				: { firstName: 'Herman@', lastName: '' };
+			currentScreen = 'welcome';
 		}
-	}
+
+		if ( attendanceQuery.isError ) {
+			const err = attendanceQuery.error as any;
+
+			if ( err.status === 404 ) {
+				// Miembro o QR no encontrado
+				currentScreen = 'expired';
+			} else if ( err.status === 400 ) {
+				const msgStr = typeof err.data?.message === 'string'
+					? err.data.message
+					: JSON.stringify( err.data || '' );
+
+				if ( msgStr.includes( 'Ya registraste asistencia' )) {
+					const fp = getFingerprint();
+
+                    welcomeUser = fp
+						? { firstName: fp.firstName, lastName: fp.lastName }
+						: { firstName: 'Hermano@', lastName: '' };
+
+                    currentScreen = 'welcome';
+				} else {
+					currentScreen = 'expired';
+				}
+			} else {
+				currentScreen = 'expired';
+			}
+		}
+	});
 
 	// ── Montaje ─────────────────────────────────────────────────────
-	onMount( async () => {
+	onMount( () => {
 		// 1. Guard de móvil
 		const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
 		const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
@@ -72,64 +114,53 @@
 
         if ( checkMobile && !isMobile ) {
 			goto( '/unauthorized' );
-			return;
-		}
-
-		// 2. Validar fecha del QR
-        // isValidDate()
-		// if ( !isValidDate() || !sessionId || !classSlug ) {
-		if ( !sessionId || !classSlug ) {
-			currentScreen = 'expired';
-			return;
-		}
-
-		// 3. ¿Ya registró asistencia hoy en esta sesión? (recarga)
-		const existingUserId = sessionStorage.getItem( attendanceKey );
-
-        if ( existingUserId ) {
-			const fingerprint = getFingerprint();
-
-            welcomeUser = fingerprint
-				? { firstName: fingerprint.firstName, lastName: fingerprint.lastName }
-				: { firstName: 'Hermano/a', lastName: '' };
-
-            currentScreen = 'welcome';
 
             return;
 		}
 
-		// 4. ¿Tiene huella digital guardada?
-		const fingerprint = getFingerprint();
+		// 2. Validar Parámetros URl
+		if ( !sessionId || !classSlug || !classes.includes( classSlug )) {
+			currentScreen = 'expired';
 
-        if ( fingerprint ) {
-			// Auto-registro con la huella
-			await doRegister( {
-				id        : fingerprint.id,
-				firstName : fingerprint.firstName,
-				lastName  : fingerprint.lastName,
-				classes   : fingerprint.classes
-			} );
-			return;
+            return;
 		}
 
-		// 5. Sin huella → mostrar registro o búsqueda
-		// Revisamos sessionStorage para saber si ya estuvo en este flujo antes
-		// (y rechazó guardar huella, para no mostrar el formulario sino la búsqueda)
-		const prevRegistered = sessionStorage.getItem( `prev_registered` );
+        ulidToken = sessionStorage.getItem( 'ULID_TOKEN' ) ?? '';
 
-        currentScreen = prevRegistered ? 'search' : 'register';
-	} );
+		// 3. Obtener token del Storage
+		if ( !ulidToken ) {
+			// Si no hay token, no podemos validar => flujo manual
+			const prevRegistered = sessionStorage.getItem( `prev_registered` );
+			currentScreen = prevRegistered ? 'search' : 'register';
 
-	// ── Callbacks de componentes ─────────────────────────────────────
+            return;
+		}
 
-	// Después del formulario de registro (nuevo usuario)
-	async function handleRegistered( user: ApiUser ) {
+		// Si existe, encendemos el query. Svelte Query leerá el sessionStorage.getItem('ULID_TOKEN') intermante
+		readyToFetch = true;
+	});
+
+	// ── Callbacks de componentes (Temporalmente Mantenidos) ─────────
+    async function doRegister( user: ApiUser ) {
+		registering = true;
+
+        try {
+			// (Implementación real pendiente)
+            welcomeUser     = { firstName: user.firstName, lastName: user.lastName };
+			currentScreen   = 'welcome';
+		} finally {
+			registering = false;
+		}
+	}
+
+
+    async function handleRegistered( user: ApiUser ) {
 		sessionStorage.setItem( 'prev_registered', '1' );
 		await doRegister( user );
 	}
 
-	// Después de buscar y seleccionar un usuario existente
-	async function handleSearchSelected( user: ApiUser ) {
+
+    async function handleSearchSelected( user: ApiUser ) {
 		await doRegister( user );
 	}
 </script>
@@ -139,12 +170,10 @@
 	<meta name="robots" content="noindex" />
 </svelte:head>
 
-<main class="flex flex-col items-center justify-center w-full px-5 py-10 mt-16 sm:mt-8">
+<main class="flex flex-col items-center justify-center w-full px-5 py-10 mt-16">
 	<!-- Logo pequeño fijo arriba -->
 	<div class="mb-6 flex items-center gap-2 animate-fade-in">
-		<div class="w-8 h-8 rounded-full bg-lds-navy dark:bg-lds-gold flex items-center justify-center shadow text-white">
-			<QRIcon />
-		</div>
+        <img src="/logo.avif" alt="logo" class="h-6 object-contain" />
 
         <span class="text-xs font-semibold text-lds-navy dark:text-lds-gold tracking-wide uppercase">
 			QR Asistencia
