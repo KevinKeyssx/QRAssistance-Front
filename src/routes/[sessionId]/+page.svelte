@@ -25,7 +25,7 @@
     // ── Estados ── 
 	let currentScreen   = $state<Screen>( 'loading' );
 	let welcomeUser     = $state<{ firstName: string; lastName: string } | null>( null );
-	let registering     = $state( false );
+	// let registering     = $state( false );
 	let readyToFetch    = $state<boolean>( false );
     let ulidToken       = $state<string>( '' );
 
@@ -67,16 +67,16 @@
     $effect(() => {
 		if ( !readyToFetch ) return;
 
-		if ( attendanceQuery.isSuccess ) {
+		if ( attendanceQuery.isSuccess && currentScreen !== 'welcome' ) {
 			const fp = getFingerprint();
 
             welcomeUser = fp
 				? { firstName: fp.firstName, lastName: fp.lastName }
-				: { firstName: 'Herman@', lastName: '' };
+				: welcomeUser || { firstName: 'Herman@', lastName: '' };
 			currentScreen = 'welcome';
 		}
 
-		if ( attendanceQuery.isError ) {
+		if ( attendanceQuery.isError && currentScreen !== 'expired' && currentScreen !== 'welcome' ) {
 			const err = attendanceQuery.error as any;
 
 			if ( err.status === 404 ) {
@@ -92,7 +92,7 @@
 
                     welcomeUser = fp
 						? { firstName: fp.firstName, lastName: fp.lastName }
-						: { firstName: 'Hermano@', lastName: '' };
+						: welcomeUser || { firstName: 'Herman@', lastName: '' };
 
                     currentScreen = 'welcome';
 				} else {
@@ -106,7 +106,6 @@
 
 	// ── Montaje ─────────────────────────────────────────────────────
 	onMount( () => {
-		// 1. Guard de móvil
 		const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
 		const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
 			navigator.userAgent
@@ -118,7 +117,6 @@
             return;
 		}
 
-		// 2. Validar Parámetros URl
 		if ( !sessionId || !classSlug || !classes.includes( classSlug )) {
 			currentScreen = 'expired';
 
@@ -127,41 +125,45 @@
 
         ulidToken = sessionStorage.getItem( 'ULID_TOKEN' ) ?? '';
 
-		// 3. Obtener token del Storage
 		if ( !ulidToken ) {
-			// Si no hay token, no podemos validar => flujo manual
 			const prevRegistered = sessionStorage.getItem( `prev_registered` );
 			currentScreen = prevRegistered ? 'search' : 'register';
 
             return;
 		}
 
-		// Si existe, encendemos el query. Svelte Query leerá el sessionStorage.getItem('ULID_TOKEN') intermante
 		readyToFetch = true;
 	});
 
 	// ── Callbacks de componentes (Temporalmente Mantenidos) ─────────
-    async function doRegister( user: ApiUser ) {
-		registering = true;
+    async function doRegister( user: ApiUser ): Promise<void> {
+		// registering = true;
 
         try {
 			// (Implementación real pendiente)
             welcomeUser     = { firstName: user.firstName, lastName: user.lastName };
 			currentScreen   = 'welcome';
 		} finally {
-			registering = false;
+			// registering = false;
 		}
 	}
 
 
-    async function handleRegistered( user: ApiUser ) {
+    async function handleRegistered( user: ApiUser ): Promise<void> {
 		sessionStorage.setItem( 'prev_registered', '1' );
 		await doRegister( user );
 	}
 
 
-    async function handleSearchSelected( user: ApiUser ) {
-		await doRegister( user );
+    async function handleSearchSelected( user: ApiUser ): Promise<void> {
+		ulidToken     = user.ulidToken;
+        welcomeUser   = { firstName: user.firstName, lastName: user.lastName };
+        currentScreen = 'loading';
+        readyToFetch  = true;
+
+        setTimeout(() => {
+            attendanceQuery.refetch();
+        }, 50);
 	}
 </script>
 
@@ -195,9 +197,6 @@
 
 		{:else if currentScreen === 'register'}
 			<RegistrationForm
-				// sessionId   = { sessionId }
-				// classSlug   = { classSlug }
-				// sessionDate = { urlDate }
 				onSuccess        = { handleRegistered }
 				onSwitchToSearch = { () => currentScreen = 'search' }
 			/>
