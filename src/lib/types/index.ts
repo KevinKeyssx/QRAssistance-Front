@@ -11,7 +11,8 @@ export interface UserFingerprint {
 	id        : string;
 	firstName : string;
 	lastName  : string;
-	classes   : string[]; // slugs de las clases seleccionadas
+	classes   : string[];
+    ulidToken : string;
 }
 
 export interface AttendanceSession {
@@ -31,4 +32,5 @@ export interface ApiUser {
 	firstName : string;
 	lastName  : string;
 	classes   : string[];
+    ulidToken : string;
 }
