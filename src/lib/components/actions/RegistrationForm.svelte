@@ -10,6 +10,9 @@
     import CautionIcon          from '$lib/icons/CautionIcon.svelte';
 	import { LDS_CLASSES }      from '$lib/utils/classes';
     import { createMutation }   from '@tanstack/svelte-query';
+    import connectRequest       from '$lib/services/fetch.service';
+    import { METHOD }           from '$lib/services/http-codes';
+    import { ROUTER }           from '$lib/utils/apis';
 
 
 	interface Props {
@@ -28,25 +31,18 @@
 	let errors          = $state<Record<string, string>>( {} );
 
     const registerMutation = createMutation(() => ({
-        mutationFn: async ( payload: {
+        mutationFn: ( payload: {
             name       : string;
             last_name  : string;
             classes    : string[];
             saveFinger : boolean;
-        }) => {
-            const res = await fetch( '/api/register-member', {
-                method  : 'POST',
-                headers : { 'Content-Type': 'application/json' },
-                body    : JSON.stringify( payload )
-            });
-
-            const data = await res.json();
-
-            if ( !res.ok ) throw { status: res.status, data };
-
-            return data;
-        },
+        }) => connectRequest({
+            endpoint   : ROUTER.INTERNAL.REGISTER_MEMBER,
+            method     : METHOD.POST,
+            body       : payload,
+        }),
         onSuccess: ( data: any ) => {
+
             if ( saveFingerPrint && data.ulid_token ) {
                 sessionStorage.setItem( 'ULID_TOKEN', data.ulid_token );
             }
@@ -218,7 +214,7 @@
 						onclick={() => toggleClass( cls.slug )}
 						disabled={isDisabled}
 						class="relative flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-left
-                            border-2 transition-all duration-200 overflow-hidden
+                            border-2 transition-all duration-200 overflow-hidden border-gray-200 dark:border-gray-600
                             disabled:opacity-30 disabled:pointer-events-none"
 						class:bg-lds-navy={isSelected}
 						class:border-lds-navy={isSelected}
