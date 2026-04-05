@@ -1,42 +1,29 @@
-import { json } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import { env }  from '$env/dynamic/private';
+import { json }  from '@sveltejs/kit';
+
+import type { RequestHandler }  from './$types';
+import connectRequest           from '$lib/services/fetch.service';
+import { METHOD }               from '$lib/services/http-codes';
+import { forwardError }         from '$lib/server/response';
 
 
 export const POST: RequestHandler = async ({ request }) => {
+    const body = await request.json();
+
     try {
-        const body = await request.json();
-        
-        const payload = {
-            name       : body.name,
-            last_name  : body.last_name,
-            classes    : body.classes,
-            saveFinger : body.saveFinger || false
-        };
-
-        const apiUrl = env.API_URL;
-
-        const response = await fetch( `${apiUrl}/api/v1/members/`, {
-            method  : 'POST',
-            headers : {
-                'Content-Type': 'application/json'
+        const data = await connectRequest({
+            endpoint   : 'api/v1/members/',
+            method     : METHOD.POST,
+            isInternal : false,
+            body       : {
+                name       : body.name,
+                last_name  : body.last_name,
+                classes    : body.classes,
+                saveFinger : body.saveFinger || false,
             },
-            body    : JSON.stringify( payload )
         });
 
-        const text = await response.text();
-        let data;
-        
-        try {
-            data = text ? JSON.parse( text ) : {};
-        } catch {
-            data = { message: text };
-        }
-
-        return json( data, { status: response.status } );
+        return json( data );
     } catch ( error ) {
-        console.error( '[Register Action] Error:', error );
-        
-        return json( { message: 'Error interno del servidor' }, { status: 500 } );
+        return forwardError( error );
     }
 };
