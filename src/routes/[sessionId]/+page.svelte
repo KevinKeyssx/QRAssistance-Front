@@ -7,12 +7,17 @@
     import { createQuery } from '@tanstack/svelte-query';
 
 	import type { ApiUser }     from '$lib/types';
-	import { getFingerprint }   from '$lib/utils/fingerprint';
 	import WelcomeScreen        from '$lib/components/actions/WelcomeScreen.svelte';
 	import SessionExpiredScreen from '$lib/components/actions/SessionExpiredScreen.svelte';
 	import RegistrationForm     from '$lib/components/actions/RegistrationForm.svelte';
 	import UserSearchForm       from '$lib/components/actions/UserSearchForm.svelte';
     import { LDS_CLASSES }      from '$lib/utils/classes';
+    import { ROUTER }           from '$lib/utils/apis';
+    import { ERROR_CODE }       from '$lib/utils/errorCodes';
+    import connectRequest       from '$lib/services/fetch.service';
+    import { METHOD }           from '$lib/services/http-codes';
+    import Dialog               from '$lib/components/shared/Dialog.svelte';
+    import SurveyForm           from './SurveyForm.svelte';
 
     // ── Estados de la pantalla ──────────────────────────────────────
 	type Screen = 'loading' | 'expired' | 'register' | 'search' | 'welcome';
@@ -22,85 +27,76 @@
 	const classSlug : string    = page.url.searchParams.get( 'class' )  ?? '';
     const classes   : string[]  = LDS_CLASSES.map(( c ) => c.slug );
 
-    // ── Estados ── 
+    // ── Estados ──
 	let currentScreen   = $state<Screen>( 'loading' );
 	let welcomeUser     = $state<{ firstName: string; lastName: string } | null>( null );
-	// let registering     = $state( false );
 	let readyToFetch    = $state<boolean>( false );
     let ulidToken       = $state<string>( '' );
+    let surveyOpen      = $state<boolean>( false );
 
 	// ── Svelte Query: Validación de Asistencia Backend ──────────────
 	const attendanceQuery = createQuery(() => ({
-		queryKey                : ['kwedfasdfsdfda', sessionId, classSlug ],
+		queryKey                : [ 'new_key', sessionId, classSlug ],
 		enabled                 : readyToFetch,
 		retry                   : false,
 		refetchOnWindowFocus    : false,
-		queryFn                 : async () => {
-			const response = await fetch( '/api/validate-assistance', {
-				method  : 'POST',
-				headers : { 'Content-Type': 'application/json' },
-				body    : JSON.stringify({
-                    sessionId,
-                    ulidToken
-                })
-			});
-
-            let data;
-
-            const text = await response.text();
-
-            try {
-                data = text ? JSON.parse( text ) : {};
-            } catch {
-                data = { message: text };
+        queryFn                 : () => connectRequest({
+            endpoint: ROUTER.INTERNAL.VALIDATE_ASSISTANCE,
+            method  : METHOD.POST,
+            body    : {
+                sessionId,
+                ulidToken
             }
+        }),
 
-			if ( !response.ok ) {
-				throw { status: response.status, data };
-			}
-
-            return data;
-		},
+        // !*QUiTAR SOLO DEV
+        staleTime: 0,
+        gcTime: 0,
 	}));
 
 
     $effect(() => {
 		if ( !readyToFetch ) return;
 
+        // ── Éxito: asistencia registrada (201) ───────────────────────────
 		if ( attendanceQuery.isSuccess && currentScreen !== 'welcome' ) {
-			const fp = getFingerprint();
+			const data = attendanceQuery.data as any;
 
-            welcomeUser = fp
-				? { firstName: fp.firstName, lastName: fp.lastName }
-				: welcomeUser || { firstName: 'Herman@', lastName: '' };
-			currentScreen = 'welcome';
+            // El 200 devuelve MemberReadDTO { name, last_name }
+            // El 201 devuelve AssistanceReadDTO (sin nombre), usamos fingerprint
+			welcomeUser = {
+                firstName : data?.name      || welcomeUser?.firstName || '',
+                lastName  : data?.last_name || welcomeUser?.lastName  || '',
+            };
+
+            currentScreen = 'welcome';
 		}
 
+        // ── Error: interpretar códigos del backend ───────────────────────
 		if ( attendanceQuery.isError && currentScreen !== 'expired' && currentScreen !== 'welcome' ) {
-			const err = attendanceQuery.error as any;
+			const err    = attendanceQuery.error as any;
+            const code   = err.data.data.detail.code  as string | undefined;
+            const status = err.status      as number;
 
-			if ( err.status === 404 ) {
-				// Miembro o QR no encontrado
-				currentScreen = 'expired';
-			} else if ( err.status === 400 ) {
-				const msgStr = typeof err.data?.message === 'string'
-					? err.data.message
-					: JSON.stringify( err.data || '' );
+            // ERR_301: encuesta pendiente del tercer domingo
+            if ( code === ERROR_CODE.ERR_301 ) {
+                surveyOpen = true;
+                return;
+            }
 
-				if ( msgStr.includes( 'Ya registraste asistencia' )) {
-					const fp = getFingerprint();
+            // ERR_103: miembro o QR no encontrado → expirado
+            if ( status === 404 || code === ERROR_CODE.ERR_103 ) {
+                currentScreen = 'expired';
+                return;
+            }
 
-                    welcomeUser = fp
-						? { firstName: fp.firstName, lastName: fp.lastName }
-						: welcomeUser || { firstName: 'Herman@', lastName: '' };
-
-                    currentScreen = 'welcome';
-				} else {
-					currentScreen = 'expired';
-				}
-			} else {
-				currentScreen = 'expired';
-			}
+            // ERR_201: clase no compatible → expirado
+            // ERR_202: QR expirado
+            // ERR_203: QR futuro
+            // ERR_204: fuera de horario
+            // ERR_205: formato de hora inválido
+            // Cualquier otro 400/500 → expirado
+            currentScreen = 'expired';
 		}
 	});
 
@@ -132,20 +128,36 @@
             return;
 		}
 
+		// El backend decide si es tercer domingo y si falta encuesta (ERR_301)
 		readyToFetch = true;
 	});
 
-	// ── Callbacks de componentes (Temporalmente Mantenidos) ─────────
-    async function doRegister( user: ApiUser ): Promise<void> {
-		// registering = true;
 
+    async function handleSurveySubmit( answers: boolean[] ): Promise<void> {
+        await connectRequest({
+            endpoint : ROUTER.SURVEY.CREATE,
+            method   : METHOD.POST,
+            body     : {
+                member_ulid   : ulidToken,
+                qr_session_id : sessionId,
+                question1     : answers[ 0 ],
+                question2     : answers[ 1 ],
+                question3     : answers[ 2 ],
+                question4     : answers[ 3 ],
+            },
+        });
+
+        surveyOpen = false;
+
+        attendanceQuery.refetch();
+    }
+
+    // ── Callbacks de componentes ─────────────────────────────────────
+    async function doRegister( user: ApiUser ): Promise<void> {
         try {
-			// (Implementación real pendiente)
             welcomeUser     = { firstName: user.firstName, lastName: user.lastName };
 			currentScreen   = 'welcome';
-		} finally {
-			// registering = false;
-		}
+		} finally {}
 	}
 
 
@@ -214,3 +226,12 @@
 		{/if}
 	</div>
 </main>
+
+<Dialog
+    open        = { surveyOpen }
+    onClose     = { () => {} }
+    persistent
+    title       = "Encuesta Ven, Sígueme"
+>
+    <SurveyForm onSubmit={ handleSurveySubmit } />
+</Dialog>
