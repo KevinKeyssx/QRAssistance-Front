@@ -18,22 +18,19 @@
 	}
 
 
-    onMount( animateConfetti );
-
-
     let { firstName, lastName, classSlug }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
     const classLabel = LDS_CLASSES.find(( c ) => c.slug === classSlug )?.label ?? classSlug;
 
 
-    function animateConfetti() {
+    onMount( () => {
         confetti({
             particleCount   : 100,
             spread          : 70,
             origin          : { y: 0.6 }
         });
-    }
+    });
 </script>
 
 <svelte:head>
@@ -57,11 +54,11 @@
 		</p>
 
         <h2 class="text-2xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
-			¡Bienvenido,
+			¡Bienvenid@,
 		</h2>
 
         <h2 class="text-2xl font-bold text-lds-navy dark:text-lds-gold leading-tight">
-			{firstName} {lastName}!
+			{ firstName } { lastName }!
 		</h2>
 	</div>
 
