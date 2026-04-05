@@ -4,11 +4,12 @@
 
 
 	interface Props {
-		open		: boolean;
-		title?		: string;
-		description?: string;
-		onClose		: () => void;
-		children	: Snippet;
+		open		 : boolean;
+		title?		 : string;
+		description? : string;
+		persistent?  : boolean;
+		onClose		 : () => void;
+		children	 : Snippet;
 	}
 
 
@@ -16,13 +17,14 @@
 		open,
 		title,
 		description,
+		persistent = false,
 		onClose,
 		children
 	}: Props = $props();
 
 
 	function handleKeydown( event: KeyboardEvent ) {
-		if ( event.key === 'Escape' && open ) {
+		if ( event.key === 'Escape' && open && !persistent ) {
 			onClose();
 		}
 	}
@@ -40,7 +42,7 @@
 		class		= "fixed inset-0 z-100 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 sm:p-6"
 		in:fade		= {{ duration: 200 }}
 		out:fade	= {{ duration: 150 }}
-		onclick		= { onClose }
+		onclick		= { () => !persistent && onClose() }
 	>
 		<!-- Panel del Modal Analógico -->
 		<div 
@@ -49,16 +51,18 @@
 			in:fly		= {{ y: 20, duration: 300, opacity: 0 }}
 			out:fly		= {{ y: 10, duration: 200, opacity: 0 }}
 		>
-			<!-- Botón Flotante para Cerrar ('X') -->
-			<button 
-				onclick		= { onClose }
-				aria-label	= "Cerrar"
-				class		= "absolute top-4 right-4 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-lds-navy dark:focus:ring-lds-gold z-10"
-			>
-				<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-					<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-				</svg>
-			</button>
+			{#if !persistent}
+				<!-- Botón Flotante para Cerrar ('X') -->
+				<button 
+					onclick		= { onClose }
+					aria-label	= "Cerrar"
+					class		= "absolute top-4 right-4 p-2 rounded-full text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:text-gray-300 dark:hover:bg-gray-700 transition-colors focus:outline-none focus:ring-2 focus:ring-lds-navy dark:focus:ring-lds-gold z-10"
+				>
+					<svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+						<path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+					</svg>
+				</button>
+			{/if}
 
 			<!-- Cabecera Estética de Título y Descripción -->
 			{#if title || description}
