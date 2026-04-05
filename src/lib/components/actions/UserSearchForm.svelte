@@ -51,23 +51,23 @@
     let searched  = $derived( searchQueryOptions.isSuccess && !searching && searchQuery.trim().length >= 2 );
 
 
-    function handleInput() {
+    function handleInput(): void {
         if ( query.trim().length === 0 && searchQuery !== '' ) {
             searchQuery = '';
         }
     }
 
 
-    function triggerSearch() {
+    function triggerSearch(): void {
         if ( query.trim().length >= 2 ) {
             searchQuery = query.trim();
         }
     }
 
 
-    function selectMember( member: ApiUser ) {
-		selectedMemberForConfirm = member;
-        showDialog = true;
+    function selectMember( member: ApiUser ): void {
+		selectedMemberForConfirm    = member;
+        showDialog                  = true;
 	}
 
 
