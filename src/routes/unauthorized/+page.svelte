@@ -28,7 +28,7 @@
 		<!-- Decoración -->
 		<div class="mt-10 flex items-center justify-center gap-2 text-xs text-gray-300 dark:text-gray-700">
 			<div class="w-16 h-px bg-current"></div>
-			<span>ISUD · Asistencia QR</span>
+			<span>Barrio La Cisterna · Asistencia QR</span>
 			<div class="w-16 h-px bg-current"></div>
 		</div>
 	</div>
