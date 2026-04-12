@@ -50,8 +50,8 @@
         }),
 
         // !*QUiTAR SOLO DEV
-        staleTime: 0,
-        gcTime: 0,
+        // staleTime: 0,
+        // gcTime: 0,
 	}));
 
 
