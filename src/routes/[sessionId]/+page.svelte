@@ -97,6 +97,8 @@
             // ERR_205: formato de hora inválido
             // Cualquier otro 400/500 → expirado
             currentScreen = 'expired';
+
+            alert( err.data.data.detail.message + ' ' + code + ' ' + currentScreen + ' ' + status )
 		}
 	});
 
