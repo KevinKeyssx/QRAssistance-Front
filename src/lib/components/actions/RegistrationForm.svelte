@@ -13,14 +13,17 @@
     import connectRequest       from '$lib/services/fetch.service';
     import { METHOD }           from '$lib/services/http-codes';
     import { ROUTER }           from '$lib/utils/apis';
+    import { ERROR_CODE }       from '$lib/utils/errorCodes';
 
 
 	interface Props {
-		onSuccess        : ( user: ApiUser ) => void;
-		onSwitchToSearch : () => void;
+		onSuccess			: ( user: ApiUser ) => void;
+		onSwitchToSearch	: () => void;
+		sessionId			: string;
+		onAttendanceError	: ( code: string ) => void;
 	}
 
-    let { onSuccess, onSwitchToSearch }: Props = $props();
+	let { onSuccess, onSwitchToSearch, sessionId, onAttendanceError } : Props = $props();
 
 	let firstName       = $state( '' );
 	let lastName        = $state( '' );
@@ -32,32 +35,39 @@
 
     const registerMutation = createMutation(() => ({
         mutationFn: ( payload: {
-            name       : string;
-            last_name  : string;
-            classes    : string[];
-            saveFinger : boolean;
+            name			: string;
+            last_name		: string;
+            classes			: string[];
+            saveFinger		: boolean;
+            qr_session_id	: string;
         }) => connectRequest({
-            endpoint   : ROUTER.INTERNAL.REGISTER_MEMBER,
-            method     : METHOD.POST,
-            body       : payload,
+            endpoint : ROUTER.INTERNAL.REGISTER_MEMBER,
+            method   : METHOD.POST,
+            body     : payload,
         }),
         onSuccess: ( data: any ) => {
-
             if ( saveFingerPrint && data.ulid_token ) {
                 sessionStorage.setItem( 'ULID_TOKEN', data.ulid_token );
             }
 
             const user: ApiUser = {
-                id        : data.id || 'temp-id',
-                firstName : firstName.trim(),
-                lastName  : lastName.trim(),
-                classes   : selectedClasses,
-                ulidToken : data.ulid_token || ''
+                id			: data.id || 'temp-id',
+                firstName	: firstName.trim(),
+                lastName	: lastName.trim(),
+                classes		: selectedClasses,
+                ulidToken	: data.ulid_token || ''
             };
 
             onSuccess( user );
         },
         onError: ( err: any ) => {
+            const code = err?.data?.data?.detail?.code as string | undefined;
+
+            if ( code === ERROR_CODE.ERR_206 ) {
+                onAttendanceError( code );
+                return;
+            }
+
             if ( err.status === 400 ) {
                 isDuplicate = true;
                 errors = {};
@@ -112,10 +122,11 @@
         if ( !validate() ) return;
 
         registerMutation.mutate({
-            name       : firstName.trim(),
-            last_name  : lastName.trim(),
-            classes    : selectedClasses,
-            saveFinger : saveFingerPrint
+            name			: firstName.trim(),
+            last_name		: lastName.trim(),
+            classes			: selectedClasses,
+            saveFinger		: saveFingerPrint,
+            qr_session_id	: sessionId,
         });
 	}
 </script>

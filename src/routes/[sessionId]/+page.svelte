@@ -14,6 +14,7 @@
     import { LDS_CLASSES }      from '$lib/utils/classes';
     import { ROUTER }           from '$lib/utils/apis';
     import { ERROR_CODE }       from '$lib/utils/errorCodes';
+    import type { ErrorCode }   from '$lib/utils/errorCodes';
     import connectRequest       from '$lib/services/fetch.service';
     import { METHOD }           from '$lib/services/http-codes';
     import Dialog               from '$lib/components/shared/Dialog.svelte';
@@ -33,6 +34,7 @@
 	let readyToFetch    = $state<boolean>( false );
     let ulidToken       = $state<string>( '' );
     let surveyOpen      = $state<boolean>( false );
+	let lastErrorCode   = $state<ErrorCode | undefined>( undefined );
 
 	// ── Svelte Query: Validación de Asistencia Backend ──────────────
 	const attendanceQuery = createQuery(() => ({
@@ -75,8 +77,10 @@
         // ── Error: interpretar códigos del backend ───────────────────────
 		if ( attendanceQuery.isError && currentScreen !== 'expired' && currentScreen !== 'welcome' ) {
 			const err    = attendanceQuery.error as any;
-            const code   = err.data.data.detail.code  as string | undefined;
-            const status = err.status      as number;
+            const code   = err.data.data.detail.code as ErrorCode | undefined;
+            const status = err.status as number;
+
+            lastErrorCode = code;
 
             // ERR_301: encuesta pendiente del tercer domingo
             if ( code === ERROR_CODE.ERR_301 ) {
@@ -215,12 +219,14 @@
 			</div>
 
 		{:else if currentScreen === 'expired'}
-			<SessionExpiredScreen />
+			<SessionExpiredScreen errorCode={ lastErrorCode } />
 
 		{:else if currentScreen === 'register'}
 			<RegistrationForm
-				onSuccess        = { handleRegistered }
-				onSwitchToSearch = { () => currentScreen = 'search' }
+				onSuccess         = { handleRegistered }
+				onSwitchToSearch  = { () => currentScreen = 'search' }
+				sessionId         = { sessionId }
+				onAttendanceError = { ( code ) => { lastErrorCode = code as ErrorCode; currentScreen = 'expired'; } }
 			/>
 
 		{:else if currentScreen === 'search'}

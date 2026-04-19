@@ -14,12 +14,13 @@ export const POST: RequestHandler = async ({ request }) => {
             endpoint   : 'api/v1/members/',
             method     : METHOD.POST,
             isInternal : false,
-            body       : {
-                name       : body.name,
-                last_name  : body.last_name,
-                classes    : body.classes,
-                saveFinger : body.saveFinger || false,
-            },
+			body       : {
+				name			: body.name,
+				last_name		: body.last_name,
+				classes			: body.classes,
+				saveFinger		: body.saveFinger || false,
+				qr_session_id	: body.qr_session_id,
+			},
         });
 
         return json( data );
