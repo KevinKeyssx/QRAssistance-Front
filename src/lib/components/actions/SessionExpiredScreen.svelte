@@ -1,14 +1,17 @@
 <script lang="ts">
-    import WarningIcon             from '$lib/icons/WarningIcon.svelte';
-    import { ERROR_CODE }           from '$lib/utils/errorCodes';
-    import type { ErrorCode }       from '$lib/utils/errorCodes';
- 
-	interface Props {
+    import WarningIcon          from '$lib/icons/WarningIcon.svelte';
+    import { ERROR_CODE }       from '$lib/utils/errorCodes';
+    import type { ErrorCode }   from '$lib/utils/errorCodes';
+
+
+    interface Props {
 		errorCode ?: ErrorCode;
 	}
- 
-	let { errorCode } : Props = $props();
- 
+
+
+    let { errorCode } : Props = $props();
+
+
     let errorDetail = $derived.by(() => {
         switch ( errorCode ) {
             case ERROR_CODE.ERR_201:
@@ -49,12 +52,12 @@
         }
     });
 </script>
- 
+
 <svelte:head>
 	<title>{ errorDetail.title } · QRAsistencia</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
- 
+
 <section class="flex flex-col items-center gap-6 animate-slide-up text-center">
 	<!-- Icono QR expirado -->
 	<div class="relative w-28 h-28">
@@ -63,7 +66,7 @@
 			<WarningIcon size={ 48 } />
 		</div>
 	</div>
- 
+
 	<div>
 		<h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">
 			{ errorDetail.title }
@@ -72,7 +75,7 @@
             { errorDetail.message }
 		</p>
 	</div>
- 
+
 	<div class="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl px-5 py-4 w-full">
 		<p class="text-xs text-amber-700 dark:text-amber-400 font-medium">
 			💡 Los códigos QR son válidos únicamente para la fecha de la reunión.

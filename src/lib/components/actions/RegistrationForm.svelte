@@ -61,6 +61,7 @@
             onSuccess( user );
         },
         onError: ( err: any ) => {
+            console.log('🚀 ~ ********* err:', err)
             const code = err?.data?.data?.detail?.code as string | undefined;
 
             if ( code === ERROR_CODE.ERR_206 ) {
