@@ -98,23 +98,26 @@
             // Cualquier otro 400/500 → expirado
             currentScreen = 'expired';
 
-            alert( err.data.data.detail.message + ' ' + code + ' ' + currentScreen + ' ' + status )
+            console.log( err.data.data.detail.message + ' ' + code + ' ' + currentScreen + ' ' + status )
 		}
 	});
 
 	// ── Montaje ─────────────────────────────────────────────────────
 	onMount( () => {
-		const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
-		const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-			navigator.userAgent
-		);
+		// const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
+		// const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			// navigator.userAgent
+		// );
 
-        if ( checkMobile && !isMobile ) {
-			goto( '/unauthorized' );
+        // if ( checkMobile && !isMobile ) {
+			// goto( '/unauthorized' );
 
-            return;
-		}
+            // return;
+		// }
 
+		console.log('🚀 ~ sessionId:', sessionId)
+		console.log('🚀 ~ classSlug:', classSlug)
+		console.log('🚀 ~ classes:', classes)
 		if ( !sessionId || !classSlug || !classes.includes( classSlug )) {
 			currentScreen = 'expired';
 
@@ -122,6 +125,8 @@
 		}
 
         ulidToken = sessionStorage.getItem( 'ULID_TOKEN' ) ?? '';
+        console.log('🚀 ~ ulidToken:', ulidToken)
+
 
 		if ( !ulidToken ) {
 			const prevRegistered = sessionStorage.getItem( `prev_registered` );
@@ -129,6 +134,9 @@
 
             return;
 		}
+
+        console.log('🚀 ~ currentScreen:', currentScreen)
+
 
 		// El backend decide si es tercer domingo y si falta encuesta (ERR_301)
 		readyToFetch = true;
