@@ -1,8 +1,11 @@
 import { METHOD } from './http-codes';
 
 
-const BASE_URL = import.meta.env.VITE_API_URL as string;
+// const BASE_URL = import.meta.env.VITE_API_URL as string;
+import { env } from '$env/dynamic/public';
 
+
+const BASE_URL = env.PUBLIC_API_URL;
 
 type Connect = {
     endpoint    : string;
