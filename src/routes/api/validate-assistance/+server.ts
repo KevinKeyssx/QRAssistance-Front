@@ -15,7 +15,7 @@ export async function POST({ request }) {
 
     try {
         const data = await connectRequest({
-            endpoint   : 'api/v1/assistances',
+            endpoint   : 'api/v1/assistances/',
             method     : METHOD.POST,
             isInternal : false,
             body       : {
