@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { page }     from '$app/state';
 	import { onMount }  from 'svelte';
-	import { goto }     from '$app/navigation';
-	import { env }      from '$env/dynamic/public';
+	// import { goto }     from '$app/navigation';
+	// import { env }      from '$env/dynamic/public';
 
     import { createQuery } from '@tanstack/svelte-query';
 
@@ -38,7 +38,7 @@
 
 	// ── Svelte Query: Validación de Asistencia Backend ──────────────
 	const attendanceQuery = createQuery(() => ({
-		queryKey                : [ 'new_key', sessionId, classSlug ],
+		queryKey                : [ sessionId, classSlug ],
 		enabled                 : readyToFetch,
 		retry                   : false,
 		refetchOnWindowFocus    : false,
@@ -101,8 +101,6 @@
             // ERR_205: formato de hora inválido
             // Cualquier otro 400/500 → expirado
             currentScreen = 'expired';
-
-            console.log( err.data.data.detail.message + ' ' + code + ' ' + currentScreen + ' ' + status )
 		}
 	});
 
@@ -119,9 +117,6 @@
             // return;
 		// }
 
-		console.log('🚀 ~ sessionId:', sessionId)
-		console.log('🚀 ~ classSlug:', classSlug)
-		console.log('🚀 ~ classes:', classes)
 		if ( !sessionId || !classSlug || !classes.includes( classSlug )) {
 			currentScreen = 'expired';
 
@@ -129,18 +124,15 @@
 		}
 
         ulidToken = sessionStorage.getItem( 'ULID_TOKEN' ) ?? '';
-        console.log('🚀 ~ ulidToken:', ulidToken)
-
 
 		if ( !ulidToken ) {
-			const prevRegistered = sessionStorage.getItem( `prev_registered` );
-			currentScreen = prevRegistered ? 'search' : 'register';
+			// const prevRegistered = sessionStorage.getItem( `prev_registered` );
+
+            // currentScreen = prevRegistered ? 'search' : 'register';
+            currentScreen = 'register';
 
             return;
 		}
-
-        console.log('🚀 ~ currentScreen:', currentScreen)
-
 
 		// El backend decide si es tercer domingo y si falta encuesta (ERR_301)
 		readyToFetch = true;
@@ -176,8 +168,13 @@
 
 
     async function handleRegistered( user: ApiUser ): Promise<void> {
-		sessionStorage.setItem( 'prev_registered', '1' );
-		await doRegister( user );
+        // if ( user.saveFinger ) {
+            sessionStorage.setItem( 'ULID_TOKEN', user.ulidToken );
+        // }
+
+        // sessionStorage.setItem( 'prev_registered', '1' );
+
+        await doRegister( user );
 	}
 
 
@@ -189,14 +186,32 @@
 
         setTimeout(() => {
             attendanceQuery.refetch();
-        }, 50);
+        }, 50 );
 	}
+
+    async function handleSurveyRequired( user: ApiUser ): Promise<void> {
+        // if ( user.saveFinger ) {
+            sessionStorage.setItem( 'ULID_TOKEN', user.ulidToken );
+        // }
+
+        // sessionStorage.setItem( 'prev_registered', '1' );
+        ulidToken     = user.ulidToken;
+        welcomeUser   = { firstName: user.firstName, lastName: user.lastName };
+        currentScreen = 'loading';
+        readyToFetch  = true;
+
+        setTimeout(() => {
+            attendanceQuery.refetch();
+        }, 50 );
+    }
 </script>
+
 
 <svelte:head>
 	<title>QRAsistencia · Barrio La Cisterna</title>
 	<meta name="robots" content="noindex" />
 </svelte:head>
+
 
 <main class="flex flex-col items-center justify-center w-full px-5 py-10 mt-16">
 	<!-- Logo pequeño fijo arriba -->
@@ -226,7 +241,11 @@
 				onSuccess         = { handleRegistered }
 				onSwitchToSearch  = { () => currentScreen = 'search' }
 				sessionId         = { sessionId }
-				onAttendanceError = { ( code ) => { lastErrorCode = code as ErrorCode; currentScreen = 'expired'; } }
+				onSurveyRequired  = { handleSurveyRequired }
+				onAttendanceError = { ( code ) => {
+                    lastErrorCode = code as ErrorCode;
+                    currentScreen = 'expired';
+                }}
 			/>
 
 		{:else if currentScreen === 'search'}
@@ -237,7 +256,6 @@
 				firstName   = { welcomeUser.firstName }
 				lastName    = { welcomeUser.lastName }
 				classSlug   = { classSlug }
-				// sessionDate = { urlDate }
 			/>
 		{/if}
 	</div>
