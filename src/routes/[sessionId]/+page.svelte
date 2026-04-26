@@ -67,8 +67,8 @@
             // El 200 devuelve MemberReadDTO { name, last_name }
             // El 201 devuelve AssistanceReadDTO (sin nombre), usamos fingerprint
 			welcomeUser = {
-                firstName : data?.name      || welcomeUser?.firstName || '',
-                lastName  : data?.last_name || welcomeUser?.lastName  || '',
+                firstName : data?.member?.name      || welcomeUser?.firstName || '',
+                lastName  : data?.member?.last_name || welcomeUser?.lastName  || '',
             };
 
             currentScreen = 'welcome';
