@@ -21,14 +21,23 @@
 		onSwitchToSearch	: () => void;
 		sessionId			: string;
 		onAttendanceError	: ( code: string ) => void;
+		onSurveyRequired	: ( user: ApiUser ) => void;
 	}
 
-	let { onSuccess, onSwitchToSearch, sessionId, onAttendanceError } : Props = $props();
 
-	let firstName       = $state( '' );
+    let {
+        onSuccess,
+        onSwitchToSearch,
+        sessionId,
+        onAttendanceError,
+        onSurveyRequired
+    } : Props = $props();
+
+
+    let firstName       = $state( '' );
 	let lastName        = $state( '' );
 	let selectedClasses = $state<string[]>( [] );
-	let saveFingerPrint = $state( false );
+	// let saveFingerPrint = $state( false );
 	let saveTerms       = $state( false );
 	let isDuplicate     = $state( false );
 	let errors          = $state<Record<string, string>>( {} );
@@ -46,25 +55,40 @@
             body     : payload,
         }),
         onSuccess: ( data: any ) => {
-            if ( saveFingerPrint && data.ulid_token ) {
-                sessionStorage.setItem( 'ULID_TOKEN', data.ulid_token );
-            }
-
             const user: ApiUser = {
-                id			: data.id || 'temp-id',
+                id			: data.id,
                 firstName	: firstName.trim(),
                 lastName	: lastName.trim(),
                 classes		: selectedClasses,
-                ulidToken	: data.ulid_token || ''
+                ulidToken	: data.ulid_token,
+                saveFinger  : true
             };
 
             onSuccess( user );
         },
         onError: ( err: any ) => {
-            console.log('🚀 ~ ********* err:', err)
-            const code = err?.data?.data?.detail?.code as string | undefined;
+            const detail            = err?.data?.data?.detail;
+            const code              = detail?.code as string;
+            const assistanceError   = detail?.assistance_error?.code as string;
 
             if ( code === ERROR_CODE.ERR_206 ) {
+                if ( assistanceError === ERROR_CODE.ERR_301 ) {
+                    const memberData = detail?.data;
+
+                    const user: ApiUser = {
+                        id			: memberData?.id,
+                        firstName	: memberData?.name,
+                        lastName	: memberData?.last_name,
+                        classes		: selectedClasses,
+                        ulidToken	: memberData?.ulid_token,
+                        saveFinger  : true
+                    };
+
+                    onSurveyRequired( user );
+
+                    return;
+                }
+
                 onAttendanceError( code );
                 return;
             }
@@ -126,7 +150,8 @@
             name			: firstName.trim(),
             last_name		: lastName.trim(),
             classes			: selectedClasses,
-            saveFinger		: saveFingerPrint,
+            // saveFinger		: saveFingerPrint,
+            saveFinger		: true,
             qr_session_id	: sessionId,
         });
 	}
@@ -287,7 +312,7 @@
 		</Check>
 
 		<!-- ═══ Huella digital ═════════════════════ -->
-		<Check
+		<!-- <Check
 			id              = "fingerprint-consent"
 			bind:checked    = { saveFingerPrint }
 			title           = "Recordarme en este dispositivo"
@@ -295,7 +320,7 @@
 			{#snippet description()}
 				<span>Identificación automática en futuras reuniones sin reingresar datos.</span>
 			{/snippet}
-		</Check>
+		</Check> -->
 
 		<!-- Error global -->
 		{#if errors.global}
@@ -315,16 +340,16 @@
                     <div class="text-orange-500 flex justify-center items-center">
                         <CautionIcon size={16} />
                     </div>
-                    
+
                     <p class="text-sm font-semibold text-orange-700 dark:text-orange-300">
                         Miembro ya registrado
                     </p>
                 </div>
-                
+
                 <p class="text-xs text-orange-600 dark:text-orange-400 leading-relaxed">
                     Este miembro ya existe. Puede buscarse en el listado o intentar con su segundo nombre y su segundo apellido.
                 </p>
-                
+
                 <button
                     type="button"
                     onclick={onSwitchToSearch}
