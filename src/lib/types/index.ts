@@ -28,9 +28,10 @@ export interface AttendedToday {
 }
 
 export interface ApiUser {
-	id        : string;
-	firstName : string;
-	lastName  : string;
-	classes   : string[];
-    ulidToken : string;
+	id          : string;
+	firstName   : string;
+	lastName    : string;
+	classes     : string[];
+    ulidToken   : string;
+    saveFinger : boolean;
 }
