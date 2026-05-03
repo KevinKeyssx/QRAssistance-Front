@@ -12,6 +12,7 @@ type Connect = {
     method?     : METHOD;
     body?       : object;
     isInternal? : boolean;
+    headers?    : Record<string, string>;
 }
 
 
@@ -31,7 +32,8 @@ export default async function connectRequest<T>({
     method = METHOD.GET,
     body,
     endpoint,
-    isInternal = true
+    isInternal = true,
+    headers
 }: Connect ): Promise<T | ApiError> {
     const url      = isInternal ? `/api/${endpoint}` : `${BASE_URL}/${endpoint}`;
     const response = await fetch( url, {
@@ -41,6 +43,7 @@ export default async function connectRequest<T>({
         headers : {
             'Content-Type' : 'application/json',
             Accept         : 'application/json',
+            ...headers,
         }
     });
 
