@@ -3,6 +3,8 @@ import { json }  from '@sveltejs/kit';
 import { METHOD }       from '$lib/services/http-codes';
 import connectRequest   from '$lib/services/fetch.service';
 import { forwardError } from '$lib/server/response';
+import { ENV }          from '$lib/utils/env.server';
+
 
 
 export async function POST({ request }) {
@@ -22,6 +24,9 @@ export async function POST({ request }) {
                 qr_session_id : sessionId,
                 member_ulid   : ulidToken,
             },
+            headers     : {
+                'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+            }
         });
 
         return json( data );

@@ -4,6 +4,7 @@ import type { RequestHandler }  from './$types';
 import connectRequest           from '$lib/services/fetch.service';
 import { METHOD }               from '$lib/services/http-codes';
 import { forwardError }         from '$lib/server/response';
+import { ENV }                  from '$lib/utils/env.server';
 
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -21,6 +22,9 @@ export const POST: RequestHandler = async ({ request }) => {
 				saveFinger		: body.saveFinger || false,
 				qr_session_id	: body.qr_session_id,
 			},
+            headers : {
+                'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+            }
         });
 
         return json( data );

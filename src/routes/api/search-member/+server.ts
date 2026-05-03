@@ -1,6 +1,8 @@
 import { json }  from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
-import connectRequest  from '$lib/services/fetch.service';
+
+import type { RequestHandler }  from './$types';
+import connectRequest           from '$lib/services/fetch.service';
+import { ENV }                  from '$lib/utils/env.server';
 
 
 export const GET: RequestHandler = async ({ url }) => {
@@ -19,8 +21,11 @@ export const GET: RequestHandler = async ({ url }) => {
     }
 
     const data = await connectRequest({
-        endpoint   : `api/v1/members/search/${encodeURIComponent( q )}?page=${page}&size=${size}`,
-        isInternal : false,
+        endpoint    : `api/v1/members/search/${encodeURIComponent( q )}?page=${page}&size=${size}`,
+        isInternal  : false,
+        headers     : {
+            'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+        }
     });
 
     return json( data );

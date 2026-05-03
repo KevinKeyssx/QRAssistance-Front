@@ -4,6 +4,7 @@ import type { RequestHandler } from './$types';
 import connectRequest          from '$lib/services/fetch.service';
 import { METHOD }              from '$lib/services/http-codes';
 import { forwardError }        from '$lib/server/response';
+import { ENV }                 from '$lib/utils/env.server';
 
 
 export const POST: RequestHandler = async ({ request }) => {
@@ -22,6 +23,9 @@ export const POST: RequestHandler = async ({ request }) => {
                 question3     : body.question3,
                 question4     : body.question4,
             },
+            headers : {
+                'X-Internal-Key': ENV.INTERNAL_SECRET_KEY
+            }
         });
 
         return json( data );
