@@ -27,6 +27,7 @@
 	"dependencies": {
 		"@formkit/tempo": "^1.0.0",
 		"@tanstack/svelte-query": "^6.1.10",
-		"canvas-confetti": "^1.9.4"
+		"canvas-confetti": "^1.9.4",
+		"zod": "^4.4.2"
 	}
 }
