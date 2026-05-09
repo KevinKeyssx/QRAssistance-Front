@@ -1,9 +1,18 @@
+import {
+    BookHeart,
+    Coffee,
+    HandHeart,
+    Tickets
+} from 'lucide-svelte';
+
 import type { LDSClass } from '$lib/types';
 import QuorumIcon        from '$lib/icons/QuorumIcon.svelte';
 import SOCIcon           from '$lib/icons/SOCIcon.svelte';
 import SchoolIcon        from '$lib/icons/SchoolIcon.svelte';
 import YoungWomenIcon    from '$lib/icons/YoungWomenIcon.svelte';
 import YoungMenIcon      from '$lib/icons/YoungMenIcon.svelte';
+import FamilyIcon        from '$lib/icons/FamilyIcon.svelte';
+import MeetingIcon       from '$lib/icons/MeetingIcon.svelte';
 // import PrimaryIcon       from '$lib/icons/PrimaryIcon.svelte';
 import JASIcon           from '$lib/icons/JASIcon.svelte';
 import FriendsIcon       from '$lib/icons/FriendsIcon.svelte';
@@ -20,3 +29,23 @@ export const LDS_CLASSES: LDSClass[] = [
 	{ slug: 'friends',              label: 'Clase amigos',                      icon: FriendsIcon,    classCompatible: [ 'quorum-elders', 'relief-society', 'sunday-school-adults' ] },
 	// { slug: 'primary',              label: 'Primaria',                  icon: PrimaryIcon,    classCompatible: [] },
 ];
+
+
+export const LDS_EXTRAS: LDSClass[] = [
+    { slug: 'family-home',  label: 'Noche de Hogar',    icon: FamilyIcon,   classCompatible: [] },
+    { slug: 'teatime',      label: 'Once',              icon: Coffee,       classCompatible: [] },
+    { slug: 'event',        label: 'Evento',            icon: Tickets,      classCompatible: [] },
+    { slug: 'meeting',      label: 'Reunión',           icon: MeetingIcon,  classCompatible: [] },
+    { slug: 'service',      label: 'Servicio',          icon: HandHeart,    classCompatible: [] },
+    { slug: 'other',        label: 'Otro',              icon: BookHeart,    classCompatible: [] },
+];
+
+
+export const LDS_ALL_CLASSES = [...LDS_CLASSES, ...LDS_EXTRAS];
+
+
+export const getClassName = ( classes: string | undefined | null ): string =>
+    !classes
+        ? ''
+        : LDS_ALL_CLASSES.find( ( c ) => c.slug === classes )?.label
+                ?? '';
