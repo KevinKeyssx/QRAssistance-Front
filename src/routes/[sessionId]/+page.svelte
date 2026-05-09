@@ -1,17 +1,21 @@
 <script lang="ts">
 	import { page }     from '$app/state';
 	import { onMount }  from 'svelte';
-	// import { goto }     from '$app/navigation';
-	// import { env }      from '$env/dynamic/public';
+	import { goto }     from '$app/navigation';
+	import { env }      from '$env/dynamic/public';
 
     import { createQuery } from '@tanstack/svelte-query';
 
+    import {
+        getUlidToken,
+        setUlidToken
+    }                           from '$lib/utils/storage';
 	import type { ApiUser }     from '$lib/types';
 	import WelcomeScreen        from '$lib/components/actions/WelcomeScreen.svelte';
 	import SessionExpiredScreen from '$lib/components/actions/SessionExpiredScreen.svelte';
 	import RegistrationForm     from '$lib/components/actions/RegistrationForm.svelte';
 	import UserSearchForm       from '$lib/components/actions/UserSearchForm.svelte';
-    import { LDS_CLASSES }      from '$lib/utils/classes';
+    import { LDS_ALL_CLASSES }  from '$lib/utils/classes';
     import { ROUTER }           from '$lib/utils/apis';
     import { ERROR_CODE }       from '$lib/utils/errorCodes';
     import type { ErrorCode }   from '$lib/utils/errorCodes';
@@ -26,7 +30,7 @@
 	// ── Parámetros de URL ───────────────────────────────────────────
 	const sessionId : string    = page.params.sessionId ?? '';
 	const classSlug : string    = page.url.searchParams.get( 'class' )  ?? '';
-    const classes   : string[]  = LDS_CLASSES.map(( c ) => c.slug );
+    const classes   : string[]  = LDS_ALL_CLASSES.map(( c ) => c.slug );
 
     // ── Estados ──
 	let currentScreen   = $state<Screen>( 'loading' );
@@ -38,7 +42,7 @@
 
 	// ── Svelte Query: Validación de Asistencia Backend ──────────────
 	const attendanceQuery = createQuery(() => ({
-		queryKey                : [ sessionId, classSlug ],
+		queryKey                : [ 'test', sessionId, classSlug ],
 		enabled                 : readyToFetch,
 		retry                   : false,
 		refetchOnWindowFocus    : false,
@@ -106,16 +110,16 @@
 
 	// ── Montaje ─────────────────────────────────────────────────────
 	onMount( () => {
-		// const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
-		// const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-			// navigator.userAgent
-		// );
+		const checkMobile = env.PUBLIC_CHECK_MOBILE === 'true';
+		const isMobile    = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+			navigator.userAgent
+		);
 
-        // if ( checkMobile && !isMobile ) {
-			// goto( '/unauthorized' );
+        if ( checkMobile && !isMobile ) {
+			goto( '/unauthorized' );
 
-            // return;
-		// }
+            return;
+		}
 
 		if ( !sessionId || !classSlug || !classes.includes( classSlug )) {
 			currentScreen = 'expired';
@@ -123,12 +127,9 @@
             return;
 		}
 
-        ulidToken = sessionStorage.getItem( 'ULID_TOKEN' ) ?? '';
+        ulidToken = getUlidToken();
 
 		if ( !ulidToken ) {
-			// const prevRegistered = sessionStorage.getItem( `prev_registered` );
-
-            // currentScreen = prevRegistered ? 'search' : 'register';
             currentScreen = 'register';
 
             return;
@@ -168,11 +169,7 @@
 
 
     async function handleRegistered( user: ApiUser ): Promise<void> {
-        // if ( user.saveFinger ) {
-            sessionStorage.setItem( 'ULID_TOKEN', user.ulidToken );
-        // }
-
-        // sessionStorage.setItem( 'prev_registered', '1' );
+        setUlidToken( user.ulidToken );
 
         await doRegister( user );
 	}
@@ -190,11 +187,8 @@
 	}
 
     async function handleSurveyRequired( user: ApiUser ): Promise<void> {
-        // if ( user.saveFinger ) {
-            sessionStorage.setItem( 'ULID_TOKEN', user.ulidToken );
-        // }
+        setUlidToken( user.ulidToken );
 
-        // sessionStorage.setItem( 'prev_registered', '1' );
         ulidToken     = user.ulidToken;
         welcomeUser   = { firstName: user.firstName, lastName: user.lastName };
         currentScreen = 'loading';
