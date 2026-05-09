@@ -3,7 +3,7 @@
 
     import confetti from 'canvas-confetti';
 
-    import { LDS_CLASSES }          from '$lib/utils/classes';
+    import { LDS_ALL_CLASSES }      from '$lib/utils/classes';
     import { formatDate }           from '$lib/utils/tempo';
     import { VERSES_BOOK_MORMON }   from '$lib/utils/versesBookMormon';
     import DateIcon                 from '$lib/icons/DateIcon.svelte';
@@ -21,7 +21,7 @@
     let { firstName, lastName, classSlug }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
-    const classLabel = LDS_CLASSES.find(( c ) => c.slug === classSlug )?.label ?? classSlug;
+    const classLabel = LDS_ALL_CLASSES.find(( c ) => c.slug === classSlug )?.label ?? classSlug;
 
 
     onMount( () => {
