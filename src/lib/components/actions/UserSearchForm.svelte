@@ -10,6 +10,7 @@
     import Dialog           from '$lib/components/shared/Dialog.svelte';
     import Check            from '$lib/components/shared/Check.svelte';
 	import type { ApiUser } from '$lib/types';
+    import { setUlidToken } from '$lib/utils/storage';
 
 
     interface Props {
@@ -74,7 +75,7 @@
     function confirmSelection() {
         if ( selectedMemberForConfirm ) {
             if ( saveFingerPrint && selectedMemberForConfirm.ulidToken ) {
-                sessionStorage.setItem( 'ULID_TOKEN', selectedMemberForConfirm.ulidToken );
+                setUlidToken( selectedMemberForConfirm.ulidToken );
             }
 
             onSuccess( selectedMemberForConfirm );
